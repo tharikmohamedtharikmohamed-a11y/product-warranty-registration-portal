@@ -1,0 +1,33 @@
+# Target directory (Maven builds)
+target/
+*.jar
+*.war
+*.ear
+*.rar
+
+# Portable Git
+.git-portable/
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+
+# IDE and Editor files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+*.swp
+*.bsg
+*.cls
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+logs/
