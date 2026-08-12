@@ -10,13 +10,30 @@
 
 ---
 
-## 🚦 Current Project Status: **PHASE 1 (Completed)**
+## 🚦 Current Project Status: **PHASE 2 (Completed)**
 
-The project is currently at **Phase 1 — Project Planning & Requirements**.
+### Phase 1: Project Planning & Requirements
+- **Status:** **COMPLETED**
+- **Scope Completed:** Complete system architecture, data modeling, REST API contracts, security blueprint, and Google Stitch UI/UX design specifications.
+- **Specification Document:** [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md)
 
-- ✅ **Phase 1 Scope**: Complete architecture, data modeling, API contract design, UI/UX specification, and workflow documentation.
-- 🛑 **Code Generation Status**: Neither backend, frontend, nor database schemas have been generated yet, in accordance with the Phase 1 specification.
-- 📄 **Full Specification Document**: Please refer to [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md) for the exhaustive 20-section system requirements and architecture blueprint.
+### Phase 2: Database Design & Supabase Setup
+- **Status:** **COMPLETED**
+- **PostgreSQL Database Designed:** Normalized 3NF schema targeting PostgreSQL 17 on Supabase.
+- **Required Tables Defined:**
+  - \users\: Customer & Admin authentication credentials, roles (\CUSTOMER\, \ADMIN\), and timestamps.
+  - \products\: Product metadata, purchase dates, serial numbers, and warranty durations.
+  - \warranties\: 1-to-1 derived warranty tracking records with status (\ACTIVE\, \EXPIRING_SOON\, \EXPIRED\).
+  - \invoices\: Metadata referencing stored purchase receipts in cloud object storage.
+  - \claims\: Customer-filed warranty claim records with state machine status tracking.
+- **Relationships Defined:** Strict foreign keys with safe deletion rules (\ON DELETE RESTRICT\ for users, products, invoices, and claims; \ON DELETE CASCADE\ for 1-to-1 product warranties).
+- **Constraints Defined:** Primary keys (UUID \gen_random_uuid()\), unique constraints (email, serial lookups, storage path), and domain check constraints (prices, durations, file sizes <= 10MB, status enums).
+- **Indexes Defined:** B-Tree indexing on foreign keys, email lookups, serial numbers, warranty expiry ranges, and claim statuses.
+- **Supabase Storage Configured:** Private \invoices\ storage bucket created with a 10 MB file size limit and MIME-type restrictions (\pplication/pdf\, \image/jpeg\, \image/png\).
+- **Security & RLS:** Row Level Security (RLS) enabled across all tables to block unauthorized PostgREST client queries while preserving full backend JDBC access for Spring Boot.
+- **Database Artifacts:**
+  - [database/schema.sql](database/schema.sql) — Full PostgreSQL DDL script with triggers and constraints.
+  - [database/DATABASE_DESIGN.md](database/DATABASE_DESIGN.md) — Exhaustive database architecture, data dictionary, and storage documentation.
 
 ---
 
@@ -26,8 +43,8 @@ The project is currently at **Phase 1 — Project Planning & Requirements**.
 | :--- | :--- |
 | **Frontend** | React.js (v18), Vite, JavaScript (ESNext), React Router (v6), Axios, Modern CSS System |
 | **Backend** | Java 17 (LTS), Spring Boot 3.2.x, Spring Web, Spring Data JPA, Hibernate, Spring Security, JWT (JJWT), Maven |
-| **Database** | PostgreSQL (hosted via Supabase) |
-| **File Storage** | Supabase Storage (Dedicated invoices object bucket) |
+| **Database** | PostgreSQL 17 (hosted via Supabase) |
+| **File Storage** | Supabase Storage (Dedicated private invoices bucket) |
 | **Testing** | JUnit 5, Spring Boot Test, Mockito, Postman, Browser Testing |
 | **Version Control** | Git & GitHub |
 | **Development Environment** | Antigravity IDE |
@@ -56,7 +73,7 @@ The project is currently at **Phase 1 — Project Planning & Requirements**.
 
 \\\
 [x] PHASE 1:  Project Planning & Requirements (Completed)
-[ ] PHASE 2:  Database Design & Supabase Setup
+[x] PHASE 2:  Database Design & Supabase Setup (Completed)
 [ ] PHASE 3:  Backend Initial Setup (Spring Boot 3.2 / Java 17)
 [ ] PHASE 4:  Backend Authentication & Security
 [ ] PHASE 5:  Frontend Initial Setup (React + Vite)
@@ -77,4 +94,6 @@ The project is currently at **Phase 1 — Project Planning & Requirements**.
 
 ## 📖 Documentation Reference
 
-Detailed specifications, including database schemas, state machines, route definitions, REST API contracts, and architecture diagrams, are available in [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md).
+- [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md) — Complete 20-section system requirements and architectural specification.
+- [database/DATABASE_DESIGN.md](database/DATABASE_DESIGN.md) — Relational schema design, data dictionary, entity diagrams, and storage architecture.
+- [database/schema.sql](database/schema.sql) — Executable PostgreSQL DDL schema with triggers and constraints.
