@@ -1,0 +1,31 @@
+# Environment and secret files
+.env
+.env.*
+!.env.example
+
+# Maven build artifacts
+target/
+*.class
+
+# Package and Log files
+*.jar
+*.war
+*.ear
+*.log
+
+# Eclipse IDE
+.project
+.classpath
+.settings/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# Visual Studio Code
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
