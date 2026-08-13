@@ -45,6 +45,13 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Size(max = 150)
+    @Column(name = "seller_name", length = 150)
+    private String sellerName;
+
+    @Column(name = "price")
+    private Double price;
+
     @NotNull(message = "Purchase date is required")
     @Column(name = "purchase_date", nullable = false)
     private LocalDate purchaseDate;
@@ -152,6 +159,22 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public LocalDate getPurchaseDate() {
