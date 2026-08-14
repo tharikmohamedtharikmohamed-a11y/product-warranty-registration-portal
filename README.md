@@ -59,6 +59,8 @@ Administrators have access to management tools, user audits, warranty inspection
 │     Supabase PostgreSQL      │ │       Supabase Storage       │
 │  (Users, Products, Claims)   │ │     (`product-invoices`)     │
 └──────────────────────────────┘ └──────────────────────────────┘
+```
+
 ---
 
 ## Database Entity-Relationship (ER) Diagram
