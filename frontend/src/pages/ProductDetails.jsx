@@ -82,7 +82,10 @@ export const ProductDetails = () => {
           </Link>
           {product && (
             <>
-              <Link to={`/products/${id}/invoices`} className="btn btn-primary btn-sm">
+              <Link to={`/claims/submit?productId=${product.id}`} className="btn btn-primary btn-sm">
+                🛠️ Submit Claim
+              </Link>
+              <Link to={`/products/${id}/invoices`} className="btn btn-secondary btn-sm">
                 📄 Manage Invoices
               </Link>
               <Link to={`/products/${id}/edit`} className="btn btn-secondary btn-sm">

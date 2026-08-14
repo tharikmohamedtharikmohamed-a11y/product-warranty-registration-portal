@@ -113,10 +113,22 @@ export const WarrantyDetails = () => {
           </div>
 
           {warranty.productId && (
-            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
-              <Link to={`/products/${warranty.productId}`} className="btn btn-primary btn-inline">
+            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <Link to={`/products/${warranty.productId}`} className="btn btn-secondary btn-inline">
                 View Linked Product
               </Link>
+              {warranty.status !== 'EXPIRED' ? (
+                <Link
+                  to={`/claims/submit?productId=${warranty.productId}&warrantyId=${warranty.warrantyId}`}
+                  className="btn btn-primary btn-inline"
+                >
+                  🛠️ Submit Warranty Claim
+                </Link>
+              ) : (
+                <button disabled className="btn btn-secondary btn-inline" style={{ opacity: 0.6, cursor: 'not-allowed' }}>
+                  Warranty Expired (Claim Ineligible)
+                </button>
+              )}
             </div>
           )}
         </div>
