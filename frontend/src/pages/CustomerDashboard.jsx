@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { productService } from '../services/productService';
 import { warrantyService } from '../services/warrantyService';
+import { claimService } from '../services/claimService';
 
 export const CustomerDashboard = () => {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [warranties, setWarranties] = useState([]);
+  const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -16,12 +18,14 @@ export const CustomerDashboard = () => {
       try {
         setLoading(true);
         setError('');
-        const [productsData, warrantiesData] = await Promise.all([
+        const [productsData, warrantiesData, claimsData] = await Promise.all([
           productService.getUserProducts(),
           warrantyService.getUserWarranties(),
+          claimService.getUserClaims().catch(() => []),
         ]);
         setProducts(productsData || []);
         setWarranties(warrantiesData || []);
+        setClaims(claimsData || []);
       } catch (err) {
         setError(err.message || 'Unable to load dashboard data.');
       } finally {
@@ -208,6 +212,58 @@ export const CustomerDashboard = () => {
                         <td>{renderStatusBadge(w.status)}</td>
                         <td>
                           <Link to={`/warranties/${w.warrantyId}`} className="btn btn-secondary btn-sm">
+                            View Details
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Recent Warranty Claims Section */}
+          <div className="dashboard-section">
+            <div className="section-header">
+              <h2 className="section-title">Recent Warranty Claims</h2>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <Link to="/claims/submit" className="btn btn-primary btn-sm">
+                  + Submit Claim
+                </Link>
+                <Link to="/claims" className="btn btn-secondary btn-sm">
+                  View All ({claims.length})
+                </Link>
+              </div>
+            </div>
+
+            {claims.length === 0 ? (
+              <div className="empty-state">
+                <span className="empty-icon">🛠️</span>
+                <h3 className="empty-title">No warranty claims</h3>
+                <p className="empty-desc">You haven't submitted any warranty claims yet.</p>
+              </div>
+            ) : (
+              <div className="table-container" style={{ margin: 0 }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Claim ID</th>
+                      <th>Product Name</th>
+                      <th>Submitted Date</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {claims.slice(0, 5).map((c) => (
+                      <tr key={c.claimId}>
+                        <td><code>{c.claimId ? c.claimId.substring(0, 8) + '...' : 'N/A'}</code></td>
+                        <td><strong>{c.productName || 'Product'}</strong></td>
+                        <td>{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'N/A'}</td>
+                        <td><span className="badge">{c.status}</span></td>
+                        <td>
+                          <Link to={`/claims/${c.claimId}`} className="btn btn-secondary btn-sm">
                             View Details
                           </Link>
                         </td>

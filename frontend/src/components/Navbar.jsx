@@ -20,34 +20,80 @@ export const Navbar = () => {
 
         <ul className="navbar-links">
           {isAuthenticated() ? (
-            <>
-              <li>
-                <NavLink to="/dashboard" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-                  Dashboard
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/products" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-                  My Products
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/warranties" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-                  My Warranties
-                </NavLink>
-              </li>
-              <li>
-                <div className="user-badge">
-                  <span>👤 {user?.name || user?.email}</span>
-                  {user?.role && <span className="role-pill">{user.role}</span>}
-                </div>
-              </li>
-              <li>
-                <button onClick={handleLogout} className="btn btn-secondary btn-inline btn-sm">
-                  Logout
-                </button>
-              </li>
-            </>
+            user?.role === 'ADMIN' ? (
+              <>
+                <li>
+                  <NavLink to="/admin" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} end>
+                    Dashboard
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/admin/claims" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                    Manage Claims
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/admin/customers" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                    Customers
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/admin/products" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                    Products
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/admin/warranties" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                    Warranties
+                  </NavLink>
+                </li>
+                <li>
+                  <div className="user-badge">
+                    <span>👑 {user?.name || user?.email}</span>
+                    <span className="role-pill">ADMIN</span>
+                  </div>
+                </li>
+                <li>
+                  <button onClick={handleLogout} className="btn btn-secondary btn-inline btn-sm">
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <NavLink to="/dashboard" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                    Dashboard
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/products" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                    My Products
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/warranties" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                    My Warranties
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/claims" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                    My Claims
+                  </NavLink>
+                </li>
+                <li>
+                  <div className="user-badge">
+                    <span>👤 {user?.name || user?.email}</span>
+                    {user?.role && <span className="role-pill">{user.role}</span>}
+                  </div>
+                </li>
+                <li>
+                  <button onClick={handleLogout} className="btn btn-secondary btn-inline btn-sm">
+                    Logout
+                  </button>
+                </li>
+              </>
+            )
           ) : (
             <>
               <li>
