@@ -32,6 +32,11 @@ public class WarrantyClaim {
     @JsonIgnore
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "invoice_id")
+    @JsonIgnore
+    private Invoice invoice;
+
     @NotBlank(message = "Issue description is required")
     @Column(name = "issue_description", nullable = false, columnDefinition = "TEXT")
     private String issueDescription;
@@ -104,6 +109,14 @@ public class WarrantyClaim {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 
     public String getIssueDescription() {
