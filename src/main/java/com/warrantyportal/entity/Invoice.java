@@ -29,6 +29,12 @@ public class Invoice {
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
+    @Column(name = "file_type", length = 100)
+    private String fileType;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
     @NotBlank(message = "Storage path is required")
     @Column(name = "storage_path", nullable = false)
     private String storagePath;
@@ -83,6 +89,22 @@ public class Invoice {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
     }
 
     public String getStoragePath() {
