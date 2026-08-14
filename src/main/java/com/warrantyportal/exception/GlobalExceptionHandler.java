@@ -17,6 +17,56 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InvalidClaimException.class)
+    public ResponseEntity<ErrorDetails> handleInvalidClaimException(InvalidClaimException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DuplicateClaimException.class)
+    public ResponseEntity<ErrorDetails> handleDuplicateClaimException(DuplicateClaimException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidFileTypeException.class)
+    public ResponseEntity<ErrorDetails> handleInvalidFileTypeException(InvalidFileTypeException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MaxFileSizeExceededException.class)
+    public ResponseEntity<ErrorDetails> handleMaxFileSizeExceededException(MaxFileSizeExceededException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(StorageOperationException.class)
+    public ResponseEntity<ErrorDetails> handleStorageOperationException(StorageOperationException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorDetails> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(
