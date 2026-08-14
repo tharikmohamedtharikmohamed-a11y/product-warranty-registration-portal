@@ -36,3 +36,7 @@ logs/
 node_modules/
 dist/
 
+# Local database storage
+*.db
+data/
+

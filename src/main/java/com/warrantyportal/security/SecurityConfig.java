@@ -71,6 +71,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler)
@@ -79,6 +80,28 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/assets/**",
+                                "/favicon.*",
+                                "/*.js",
+                                "/*.css",
+                                "/h2-console/**",
+                                "/login",
+                                "/register",
+                                "/dashboard",
+                                "/products",
+                                "/products/**",
+                                "/warranties",
+                                "/warranties/**",
+                                "/claims",
+                                "/claims/**",
+                                "/invoices",
+                                "/invoices/**",
+                                "/admin",
+                                "/admin/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

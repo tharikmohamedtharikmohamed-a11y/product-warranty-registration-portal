@@ -59,7 +59,102 @@ Administrators have access to management tools, user audits, warranty inspection
 │     Supabase PostgreSQL      │ │       Supabase Storage       │
 │  (Users, Products, Claims)   │ │     (`product-invoices`)     │
 └──────────────────────────────┘ └──────────────────────────────┘
+---
+
+## Database Entity-Relationship (ER) Diagram
+
+```mermaid
+erDiagram
+    USERS ||--o{ PRODUCTS : "registers (1:N)"
+    USERS ||--o{ WARRANTIES : "owns (1:N)"
+    USERS ||--o{ INVOICES : "uploads (1:N)"
+    USERS ||--o{ WARRANTY_CLAIMS : "submits (1:N)"
+    
+    PRODUCTS ||--|| WARRANTIES : "has (1:1)"
+    PRODUCTS ||--o{ INVOICES : "has_invoices (1:N)"
+    PRODUCTS ||--o{ WARRANTY_CLAIMS : "filed_against (1:N)"
+    
+    WARRANTIES ||--o{ WARRANTY_CLAIMS : "covers (1:N)"
+    
+    INVOICES |o--o{ WARRANTY_CLAIMS : "proof_for (0..1:N)"
+
+    USERS {
+        uuid id PK
+        varchar name
+        varchar email UK
+        varchar password
+        varchar phone
+        varchar role
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PRODUCTS {
+        uuid id PK
+        uuid user_id FK
+        varchar product_name
+        varchar brand
+        varchar model_number
+        varchar serial_number UK
+        varchar category
+        text description
+        varchar seller_name
+        double price
+        date purchase_date
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    WARRANTIES {
+        uuid id PK
+        uuid product_id FK,UK
+        uuid user_id FK
+        date warranty_start_date
+        date warranty_end_date
+        int warranty_period_months
+        varchar status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    INVOICES {
+        uuid id PK
+        uuid product_id FK
+        uuid user_id FK
+        varchar file_name
+        varchar file_type
+        bigint file_size
+        varchar storage_path
+        timestamp uploaded_at
+    }
+
+    WARRANTY_CLAIMS {
+        uuid id PK
+        uuid product_id FK
+        uuid warranty_id FK
+        uuid user_id FK
+        uuid invoice_id FK
+        text issue_description
+        varchar status
+        text resolution
+        timestamp claim_date
+        timestamp updated_at
+    }
 ```
+
+### Entity Relationship Mapping
+
+| Parent Entity | Child Entity | Relationship | Description |
+|---|---|---|---|
+| **`users`** | **`products`** | `1 : N` | One customer can register multiple products. |
+| **`products`** | **`warranties`** | `1 : 1` | Every registered product has exactly one unique warranty record. |
+| **`users`** | **`warranties`** | `1 : N` | User directly owns all warranties for their products. |
+| **`products`** | **`invoices`** | `1 : N` | A product can have one or more uploaded purchase receipts/invoices. |
+| **`users`** | **`invoices`** | `1 : N` | User owns all uploaded invoice attachments. |
+| **`warranties`** | **`warranty_claims`**| `1 : N` | Claims are filed against a specific product's warranty. |
+| **`products`** | **`warranty_claims`**| `1 : N` | Claims link back directly to the registered product. |
+| **`users`** | **`warranty_claims`**| `1 : N` | A customer can submit multiple claims. |
+| **`invoices`** | **`warranty_claims`**| `0..1 : N` | An invoice can optionally be linked as claim proof of purchase. |
 
 ---
 
