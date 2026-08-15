@@ -1,0 +1,350 @@
+{
+  "info": {
+    "_postman_id": "a9b8c7d6-e5f4-3210-9876-543210fedcba",
+    "name": "Product Warranty Registration Portal API",
+    "description": "Complete REST API collection for Product Warranty Registration Portal Backend (Phases 1 - 8)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "customerToken", "value": "", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "productId", "value": "", "type": "string" },
+    { "key": "warrantyId", "value": "", "type": "string" },
+    { "key": "invoiceId", "value": "", "type": "string" },
+    { "key": "claimId", "value": "", "type": "string" },
+    { "key": "customerUserId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Health",
+      "item": [
+        {
+          "name": "Get API Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/health", "host": ["{{baseUrl}}"], "path": ["api", "health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Authentication",
+      "item": [
+        {
+          "name": "Register Customer User",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123\",\n  \"phone\": \"9876543210\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login Customer",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@warrantyportal.com\",\n  \"password\": \"AdminPassword123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Products",
+      "item": [
+        {
+          "name": "Register Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"iPhone 15 Pro\",\n  \"category\": \"Mobile\",\n  \"brand\": \"Apple\",\n  \"modelNumber\": \"A2849\",\n  \"serialNumber\": \"SN-APP-1515\",\n  \"purchaseDate\": \"2026-08-01\",\n  \"sellerName\": \"Apple Retail\",\n  \"price\": 120000.0,\n  \"warrantyPeriodMonths\": 12\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
+          }
+        },
+        {
+          "name": "Get User Products",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
+          }
+        },
+        {
+          "name": "Get Product By ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{productId}}"] }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productName\": \"iPhone 15 Pro Max\",\n  \"category\": \"Mobile\",\n  \"brand\": \"Apple\",\n  \"modelNumber\": \"A2849-MAX\",\n  \"serialNumber\": \"SN-APP-1515\",\n  \"purchaseDate\": \"2026-08-01\",\n  \"sellerName\": \"Apple Flagship Store\",\n  \"price\": 135000.0,\n  \"warrantyPeriodMonths\": 12\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{productId}}"] }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{productId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Warranties",
+      "item": [
+        {
+          "name": "Get User Warranties",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/warranties", "host": ["{{baseUrl}}"], "path": ["api", "warranties"] }
+          }
+        },
+        {
+          "name": "Get Warranty By ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/warranties/{{warrantyId}}", "host": ["{{baseUrl}}"], "path": ["api", "warranties", "{{warrantyId}}"] }
+          }
+        },
+        {
+          "name": "Get Warranty By Product ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/products/{{productId}}/warranty", "host": ["{{baseUrl}}"], "path": ["api", "products", "{{productId}}", "warranty"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Invoices",
+      "item": [
+        {
+          "name": "Upload Invoice",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": [] },
+                { "key": "productId", "value": "{{productId}}", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/invoices/upload", "host": ["{{baseUrl}}"], "path": ["api", "invoices", "upload"] }
+          }
+        },
+        {
+          "name": "Get User Invoices",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/invoices", "host": ["{{baseUrl}}"], "path": ["api", "invoices"] }
+          }
+        },
+        {
+          "name": "Get Invoice Metadata By ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}", "host": ["{{baseUrl}}"], "path": ["api", "invoices", "{{invoiceId}}"] }
+          }
+        },
+        {
+          "name": "Download Invoice Signed Link",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}/download", "host": ["{{baseUrl}}"], "path": ["api", "invoices", "{{invoiceId}}", "download"] }
+          }
+        },
+        {
+          "name": "Delete Invoice",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/invoices/{{invoiceId}}", "host": ["{{baseUrl}}"], "path": ["api", "invoices", "{{invoiceId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Claims",
+      "item": [
+        {
+          "name": "Submit Warranty Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"warrantyId\": \"{{warrantyId}}\",\n  \"invoiceId\": \"{{invoiceId}}\",\n  \"issueDescription\": \"Screen camera glass cracked\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/claims", "host": ["{{baseUrl}}"], "path": ["api", "claims"] }
+          }
+        },
+        {
+          "name": "Get Customer Claims",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/claims", "host": ["{{baseUrl}}"], "path": ["api", "claims"] }
+          }
+        },
+        {
+          "name": "Get Claim By ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/claims/{{claimId}}", "host": ["{{baseUrl}}"], "path": ["api", "claims", "{{claimId}}"] }
+          }
+        },
+        {
+          "name": "Cancel Customer Claim",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{customerToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/claims/{{claimId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "claims", "{{claimId}}", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Admin",
+      "item": [
+        {
+          "name": "Admin Get Users",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/users", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users"] }
+          }
+        },
+        {
+          "name": "Admin Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/users/{{customerUserId}}", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", "{{customerUserId}}"] }
+          }
+        },
+        {
+          "name": "Admin Get Products",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Admin Get Warranties",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/warranties", "host": ["{{baseUrl}}"], "path": ["api", "admin", "warranties"] }
+          }
+        },
+        {
+          "name": "Admin Get Claims",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/claims", "host": ["{{baseUrl}}"], "path": ["api", "admin", "claims"] }
+          }
+        },
+        {
+          "name": "Admin Get Claim By ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/claims/{{claimId}}", "host": ["{{baseUrl}}"], "path": ["api", "admin", "claims", "{{claimId}}"] }
+          }
+        },
+        {
+          "name": "Admin Update Claim Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\",\n  \"resolutionNotes\": \"Approved for screen panel replacement\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/admin/claims/{{claimId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "admin", "claims", "{{claimId}}", "status"] }
+          }
+        },
+        {
+          "name": "Admin Get Invoices",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/invoices", "host": ["{{baseUrl}}"], "path": ["api", "admin", "invoices"] }
+          }
+        },
+        {
+          "name": "Admin Download Invoice Signed Link",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/invoices/{{invoiceId}}/download", "host": ["{{baseUrl}}"], "path": ["api", "admin", "invoices", "{{invoiceId}}", "download"] }
+          }
+        },
+        {
+          "name": "Admin Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{adminToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/admin/dashboard/stats", "host": ["{{baseUrl}}"], "path": ["api", "admin", "dashboard", "stats"] }
+          }
+        }
+      ]
+    }
+  ]
+}

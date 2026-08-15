@@ -1,442 +1,181 @@
 # Product Warranty Registration Portal
 
-## Project Overview
-The **Product Warranty Registration Portal** is a centralized digital platform designed to help consumers securely register their purchased products, keep track of warranty periods, upload purchase invoices, and request warranty claims seamlessly.
+A robust, enterprise-ready Java Spring Boot REST API backend designed for digital product warranty registration, purchase invoice management using Supabase Storage, warranty claims tracking, and administrator management.
 
 ---
 
-## Problem Statement
-Many customers lose physical warranty cards or forget the expiration date of their product warranties. As a result, they encounter frustration and financial loss when attempting to claim warranty services. This project eliminates paper clutter by storing digital proof of purchase and warranty terms in a secure, accessible web portal.
+## Project Description
 
----
+Customers frequently misplace physical paper receipts, lose warranty cards, or forget exact warranty expiration dates for high-value electronics and household appliances. When products break down, filing warranty claims becomes stressful and error-prone due to missing documentation.
 
-## Objectives
-- Digital central repository for product warranty management.
-- Real-time tracking of warranty expiration dates.
-- Secure invoice image and PDF file uploads (Future Phase).
-- Simple RESTful API backend built using Java & Spring Boot.
-- Cloud database backend using Supabase PostgreSQL.
+The **Product Warranty Registration Portal** solves this problem by providing a centralized digital portal where customers can:
+- Digitally register their purchased products (brand, model, serial number, price, purchase date).
+- Track automated warranty start dates, end dates, and real-time status (`ACTIVE`, `EXPIRING_SOON`, `EXPIRED`).
+- Upload and securely store digital purchase invoices (PDF, JPG, PNG up to 10MB) via Supabase Storage.
+- Submit, track, and manage warranty claims with automated status progression.
+
+Administrators have access to management tools, user audits, warranty inspection, status transition rules, and dashboard analytics.
 
 ---
 
 ## Technology Stack
-- **Language**: Java 17
-- **Framework**: Spring Boot 3.2.3 (REST Web API, Data JPA)
-- **Build Tool**: Apache Maven
-- **ORM Provider**: Hibernate
-- **Database**: Supabase PostgreSQL
-- **Security & Auth**: Spring Security + JWT *(Phase 2)*
-- **Frontend**: Single Page Application / React / Vue *(Phase 3)*
+
+- **Core Backend Framework**: Java 17, Spring Boot 3.2.3
+- **Build System**: Apache Maven
+- **Database & Persistence**: Supabase PostgreSQL, Spring Data JPA, Hibernate ORM, H2 Database (for automated test suite)
+- **Cloud Storage**: Supabase Storage REST API (`product-invoices` bucket)
+- **Security & Authorization**: Spring Security, JWT (JSON Web Tokens), BCrypt Password Hashing
+- **REST & Serialization**: Jackson JSON, Spring WebMVC, Jakarta Validation (`@Valid`, `@NotBlank`, `@Email`)
+- **Testing**: JUnit 5, Mockito, Spring Boot Test (`MockMvc`), H2 In-Memory DB
 
 ---
 
-## Planned Features
-- **Phase 1 (Completed)**: Project Foundation, Supabase PostgreSQL configuration, REST Health Check endpoint, Exception Handling framework.
-- **Phase 2 (Completed)**: Database Entities (`User`, `Product`, `Warranty`, `Invoice`, `WarrantyClaim`) & Repositories.
-- **Phase 3 (Completed)**: User Authentication & Security (BCrypt, JWT, Spring Security, CUSTOMER & ADMIN roles).
-- **Phase 4 (Completed)**: Product Registration & Warranty Management (CRUD APIs).
-- **Phase 5 (Completed)**: Purchase Invoice Upload & Supabase Storage Integration (`product-invoices`).
-- **Phase 6 (Completed)**: Warranty Claim Management & Status Tracking.
+## Architecture
 
----
-
-## Warranty Claim Management (Phase 6)
-
-Authenticated customers can submit and track warranty claims for their registered products. The system validates product/warranty ownership, ensures the warranty has not expired (`400 Bad Request` if expired), and prevents duplicate active claims (`409 Conflict` if a `PENDING` or `IN_PROGRESS` claim already exists for the warranty).
-
-### Claim Status Lifecycle
-1. **`PENDING`**: Initial status when a customer submits a claim.
-2. **`IN_PROGRESS`**: Claim is being evaluated or serviced.
-3. **`APPROVED`**: Warranty claim has been approved by Admin/Staff.
-4. **`REJECTED`**: Warranty claim has been rejected.
-5. **`COMPLETED`**: Service or replacement has been fulfilled.
-6. **`CANCELLED`**: Customer cancelled a `PENDING` claim.
-
----
-
-## Warranty Claim API Endpoints
-
-### 1. Submit Warranty Claim
-**`POST /api/claims`**  
-*Header required*: `Authorization: Bearer <token>`
-
-**Request Payload**:
-```json
-{
-  "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "warrantyId": "f50e8400-e29b-41d4-a716-446655440000",
-  "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "issueDescription": "Screen flickering and touch unresponsive"
-}
-```
-
-**Success Response (`201 Created`)**:
-```json
-{
-  "claimId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-  "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "productName": "iPhone 15",
-  "warrantyId": "f50e8400-e29b-41d4-a716-446655440000",
-  "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "issueDescription": "Screen flickering and touch unresponsive",
-  "status": "PENDING",
-  "resolutionNotes": null,
-  "createdAt": "2026-08-13T22:45:00",
-  "updatedAt": "2026-08-13T22:45:00"
-}
+```text
+┌─────────────────────────────────────────────────────────────┐
+│              Frontend Web / Mobile Application              │
+│                 (React / Angular / Vue / iOS)               │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ HTTPS / REST API / JWT
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 Spring Boot Backend Service                 │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ Security Filter Chain (JWT Auth, BCrypt, CORS, RBAC)    │ │
+│ └────────────────────────────┬────────────────────────────┘ │
+│ ┌────────────────────────────▼────────────────────────────┐ │
+│ │ Controller Layer (/api/auth, /products, /claims, etc.)  │ │
+│ └────────────────────────────┬────────────────────────────┘ │
+│ ┌────────────────────────────▼────────────────────────────┐ │
+│ │ Service Layer (Business Logic, Ownership Validation)    │ │
+│ └───────────────────────────┬─┴───────────────────────────┘ │
+└─────────────────────────────┼───────────────────────────────┘
+                              │
+               ┌──────────────┴──────────────┐
+               │                             │
+               ▼                             ▼
+┌──────────────────────────────┐ ┌──────────────────────────────┐
+│     Supabase PostgreSQL      │ │       Supabase Storage       │
+│  (Users, Products, Claims)   │ │     (`product-invoices`)     │
+└──────────────────────────────┘ └──────────────────────────────┘
 ```
 
 ---
 
-### 2. Get User Claims
-**`GET /api/claims`**  
-*Header required*: `Authorization: Bearer <token>`
+## Features
 
-**Success Response (`200 OK`)**:
-```json
-[
-  {
-    "claimId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-    "productName": "iPhone 15",
-    "warrantyId": "f50e8400-e29b-41d4-a716-446655440000",
-    "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-    "issueDescription": "Screen flickering and touch unresponsive",
-    "status": "PENDING",
-    "resolutionNotes": null,
-    "createdAt": "2026-08-13T22:45:00",
-    "updatedAt": "2026-08-13T22:45:00"
-  }
-]
+### Customer Features
+- **Account Registration & Login**: Secure registration (`CUSTOMER` role default) and BCrypt password hashing.
+- **Product Registration**: Register purchased products with unique serial numbers and automatic warranty computation.
+- **Warranty Management**: Real-time status calculation (`ACTIVE`, `EXPIRING_SOON` <= 30 days, `EXPIRED`).
+- **Invoice Upload & Download**: Upload PDF/JPG/PNG invoices (max 10MB) to Supabase Storage with signed download links.
+- **Warranty Claims**: Submit warranty claims for valid warranties, view claim history, and cancel eligible `PENDING` claims.
+
+### Administrator Features (`ROLE_ADMIN`)
+- **User Audit**: View complete user directory and detailed profile attributes.
+- **Product & Warranty Inspection**: View all registered products and warranties system-wide.
+- **Claim Management**: Process warranty claims and update statuses (`PENDING` -> `APPROVED` / `REJECTED` / `IN_PROGRESS` -> `COMPLETED`) with state transition validation.
+- **Invoice Metadata & Access**: View invoice upload records and generate admin signed download URLs.
+- **Dashboard Statistics**: Real-time summary metrics (`totalUsers`, `totalProducts`, `activeWarranties`, `pendingClaims`, etc.) via efficient database count queries.
+
+---
+
+## API Endpoint Summary Table
+
+| Category | Method | Endpoint | Authorization | Description |
+|---|---|---|---|---|
+| **Health** | `GET` | `/api/health` | Public | System status and database connectivity health check |
+| **Auth** | `POST` | `/api/auth/register` | Public | Register new customer account |
+| **Auth** | `POST` | `/api/auth/login` | Public | Login and receive JWT access token |
+| **Products** | `POST` | `/api/products` | Customer | Register product & auto-create warranty |
+| **Products** | `GET` | `/api/products` | Customer | List authenticated customer's products |
+| **Products** | `GET` | `/api/products/{id}` | Customer | Get customer product by ID (IDOR protected) |
+| **Products** | `PUT` | `/api/products/{id}` | Customer | Update customer product details |
+| **Products** | `DELETE` | `/api/products/{id}` | Customer | Delete product & associated warranty/invoices |
+| **Warranties**| `GET` | `/api/warranties` | Customer | List authenticated customer's warranties |
+| **Warranties**| `GET` | `/api/warranties/{id}` | Customer | Get warranty by ID |
+| **Warranties**| `GET` | `/api/products/{productId}/warranty` | Customer | Get warranty for specific product |
+| **Invoices** | `POST` | `/api/invoices/upload` | Customer | Upload purchase invoice file to Supabase Storage |
+| **Invoices** | `GET` | `/api/invoices` | Customer | List customer's invoice metadata |
+| **Invoices** | `GET` | `/api/invoices/{id}` | Customer | Get invoice metadata by ID |
+| **Invoices** | `GET` | `/api/invoices/{id}/download` | Customer | Generate signed download link for invoice |
+| **Invoices** | `DELETE` | `/api/invoices/{id}` | Customer | Delete invoice metadata & Supabase storage object |
+| **Claims** | `POST` | `/api/claims` | Customer | Submit warranty claim for valid active warranty |
+| **Claims** | `GET` | `/api/claims` | Customer | List customer's warranty claims |
+| **Claims** | `GET` | `/api/claims/{id}` | Customer | Get warranty claim details by ID |
+| **Claims** | `PUT` | `/api/claims/{id}/cancel` | Customer | Cancel eligible `PENDING` warranty claim |
+| **Admin** | `GET` | `/api/admin/users` | Admin (`ROLE_ADMIN`) | List all portal users |
+| **Admin** | `GET` | `/api/admin/users/{id}` | Admin (`ROLE_ADMIN`) | Get user details by ID |
+| **Admin** | `GET` | `/api/admin/products` | Admin (`ROLE_ADMIN`) | List all registered products across portal |
+| **Admin** | `GET` | `/api/admin/warranties` | Admin (`ROLE_ADMIN`) | List all warranties across portal |
+| **Admin** | `GET` | `/api/admin/claims` | Admin (`ROLE_ADMIN`) | List all warranty claims across portal |
+| **Admin** | `GET` | `/api/admin/claims/{id}` | Admin (`ROLE_ADMIN`) | Get warranty claim details by ID |
+| **Admin** | `PUT` | `/api/admin/claims/{id}/status` | Admin (`ROLE_ADMIN`) | Update claim status & resolution notes |
+| **Admin** | `GET` | `/api/admin/invoices` | Admin (`ROLE_ADMIN`) | List all invoice metadata across portal |
+| **Admin** | `GET` | `/api/admin/invoices/{id}/download` | Admin (`ROLE_ADMIN`) | Generate admin signed download link |
+| **Admin** | `GET` | `/api/admin/dashboard/stats` | Admin (`ROLE_ADMIN`) | Get dashboard summary metrics |
+
+---
+
+## Environment Variables
+
+Configure the following environment variables prior to running the application. Placeholder defaults are defined in `src/main/resources/application.properties`.
+
+```env
+# Database Credentials
+SUPABASE_DB_URL=jdbc:postgresql://<YOUR_SUPABASE_HOST>:5432/postgres
+SUPABASE_DB_USERNAME=postgres
+SUPABASE_DB_PASSWORD=<YOUR_DATABASE_PASSWORD>
+
+# Supabase Storage & API Credentials
+SUPABASE_URL=https://<YOUR_PROJECT_REF>.supabase.co
+SUPABASE_SERVICE_KEY=<YOUR_SUPABASE_SERVICE_KEY>
+SUPABASE_STORAGE_BUCKET=product-invoices
+
+# JWT Security
+JWT_SECRET=<YOUR_HIGH_ENTROPY_BASE64_JWT_SECRET_KEY>
+JWT_EXPIRATION=86400000
+
+# CORS Allowed Origins
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:4200
 ```
 
 ---
 
-### 3. Get Claim By ID
-**`GET /api/claims/{id}`**  
-*Header required*: `Authorization: Bearer <token>`
+## Running the Project
 
-**Success Response (`200 OK`)**:
-```json
-{
-  "claimId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-  "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "productName": "iPhone 15",
-  "warrantyId": "f50e8400-e29b-41d4-a716-446655440000",
-  "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "issueDescription": "Screen flickering and touch unresponsive",
-  "status": "PENDING",
-  "resolutionNotes": null,
-  "createdAt": "2026-08-13T22:45:00",
-  "updatedAt": "2026-08-13T22:45:00"
-}
+### Prerequisites
+- **Java**: OpenJDK 17 or Java 21 installed (`java -version`).
+- **Maven**: Maven 3.8+ installed (or use included Maven Wrapper `mvnw` / `mvnw.cmd`).
+
+### 1. Build and Run Automated Tests
+```bash
+# Windows
+.\mvnw.cmd clean test
+
+# Linux / macOS
+./mvnw clean test
 ```
 
----
+### 2. Run the Application Locally
+```bash
+# Windows
+.\mvnw.cmd spring-boot:run
 
-### 4. Cancel Claim (Customer)
-**`PUT /api/claims/{id}/cancel`**  
-*Header required*: `Authorization: Bearer <token>`
-
-**Success Response (`200 OK`)**:
-```json
-{
-  "claimId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-  "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "productName": "iPhone 15",
-  "warrantyId": "f50e8400-e29b-41d4-a716-446655440000",
-  "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "issueDescription": "Screen flickering and touch unresponsive",
-  "status": "CANCELLED",
-  "resolutionNotes": null,
-  "createdAt": "2026-08-13T22:45:00",
-  "updatedAt": "2026-08-13T22:46:00"
-}
+# Linux / macOS
+./mvnw spring-boot:run
 ```
+The application will start on port `8080` (accessible at `http://localhost:8080`).
 
 ---
 
-### 5. Update Claim Status (Admin Only)
-**`PUT /api/admin/claims/{id}/status`**  
-*Header required*: `Authorization: Bearer <admin-token>`  
-*Role required*: `ADMIN`
+## Testing with Postman
 
-**Request Payload**:
-```json
-{
-  "status": "APPROVED",
-  "resolutionNotes": "Device approved for free display replacement service"
-}
-```
+A complete, ready-to-import Postman collection is included in the project root:
+- File: [`warranty_portal_postman_collection.json`](file:///d:/tharik_project/warranty_portal_postman_collection.json)
 
-**Success Response (`200 OK`)**:
-```json
-{
-  "claimId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-  "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "productName": "iPhone 15",
-  "warrantyId": "f50e8400-e29b-41d4-a716-446655440000",
-  "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "issueDescription": "Screen flickering and touch unresponsive",
-  "status": "APPROVED",
-  "resolutionNotes": "Device approved for free display replacement service",
-  "createdAt": "2026-08-13T22:45:00",
-  "updatedAt": "2026-08-13T22:50:00"
-}
-```
-
----
-
-
----
-
-## Purchase Invoice Upload & Supabase Storage (Phase 5)
-
-Authenticated customers can upload proof-of-purchase invoices for registered products. Invoices are stored in Supabase Storage under structured path `invoices/{userId}/{productId}/{uniqueFileName}`, with metadata tracked in PostgreSQL.
-
-### Key File Validation Rules
-1. **Allowed Formats**: `PDF` (`application/pdf`), `JPG` (`image/jpeg`), `JPEG` (`image/jpeg`), `PNG` (`image/png`).
-2. **Maximum File Size**: **10 MB** (enforced by Spring Boot multipart configuration and service-level validation).
-3. **Owner Isolation**: Customers can only upload, view, download, or delete invoices for products they own (`403 Forbidden` returned otherwise).
-4. **Secure Signed Downloads**: `GET /api/invoices/{id}/download` generates a short-lived (1 hour) signed URL. Secret keys are never exposed.
-
----
-
-## Invoice API Endpoints
-
-### 1. Upload Purchase Invoice
-**`POST /api/invoices/upload`**  
-*Content-Type*: `multipart/form-data`  
-*Header required*: `Authorization: Bearer <token>`  
-*Form Parameters*: `productId` (UUID), `file` (MultipartFile)
-
-**Success Response (`201 Created`)**:
-```json
-{
-  "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "fileName": "purchase_receipt.pdf",
-  "fileType": "application/pdf",
-  "fileSize": 245678,
-  "uploadedAt": "2026-08-13T22:40:00",
-  "storagePath": "invoices/user-uuid/product-uuid/uuid_purchase_receipt.pdf",
-  "downloadUrl": "/api/invoices/d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c/download"
-}
-```
-
----
-
-### 2. Get User Invoices
-**`GET /api/invoices`**  
-*Header required*: `Authorization: Bearer <token>`
-
-**Success Response (`200 OK`)**:
-```json
-[
-  {
-    "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-    "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-    "fileName": "purchase_receipt.pdf",
-    "fileType": "application/pdf",
-    "fileSize": 245678,
-    "uploadedAt": "2026-08-13T22:40:00",
-    "storagePath": "invoices/user-uuid/product-uuid/uuid_purchase_receipt.pdf",
-    "downloadUrl": "/api/invoices/d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c/download"
-  }
-]
-```
-
----
-
-### 3. Get Invoice By ID
-**`GET /api/invoices/{id}`**  
-*Header required*: `Authorization: Bearer <token>`
-
-**Success Response (`200 OK`)**:
-```json
-{
-  "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "productId": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "fileName": "purchase_receipt.pdf",
-  "fileType": "application/pdf",
-  "fileSize": 245678,
-  "uploadedAt": "2026-08-13T22:40:00",
-  "storagePath": "invoices/user-uuid/product-uuid/uuid_purchase_receipt.pdf",
-  "downloadUrl": "/api/invoices/d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c/download"
-}
-```
-
----
-
-### 4. Download / View Invoice Signed Link
-**`GET /api/invoices/{id}/download`**  
-*Header required*: `Authorization: Bearer <token>`
-
-**Success Response (`200 OK`)**:
-```json
-{
-  "invoiceId": "d8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-  "fileName": "purchase_receipt.pdf",
-  "fileType": "application/pdf",
-  "downloadUrl": "https://cyzgjkjjhwqssobvovfj.supabase.co/storage/v1/object/sign/product-invoices/invoices/...?token=...",
-  "expiresInSeconds": 3600
-}
-```
-
----
-
-### 5. Delete Invoice
-**`DELETE /api/invoices/{id}`**  
-*Header required*: `Authorization: Bearer <token>`
-
-**Success Response (`204 No Content`)**
-
----
-
-## User Authentication & Security (Phase 3)
-
-The application enforces stateless, token-based authentication using **Spring Security** and **JSON Web Tokens (JWT)**. Passwords stored in Supabase PostgreSQL are strictly hashed using **BCrypt**.
-
-### Key Security Design Principles
-1. **BCrypt Password Hashing**: Plaintext passwords are never stored in the database or logged. All passwords are hashed using `BCryptPasswordEncoder` before persistence.
-2. **Strict Role Assignment**: Public registration (`POST /api/auth/register`) always assigns `UserRole.CUSTOMER`. Any `role` field in public client payloads (such as `"role": "ADMIN"`) is explicitly ignored to prevent privilege escalation.
-3. **Safe API Responses**: Passwords and sensitive fields are excluded from all DTO responses (`UserResponse`, `AuthResponse`).
-4. **Controlled Admin Seeding**: No public endpoint exists for admin creation. An `AdminInitializer` bean seeds the default administrator on startup if no admin user is present in the database.
-5. **Stateless Security**: Spring Security is configured with stateless sessions (`SessionCreationPolicy.STATELESS`). Unauthenticated requests to protected endpoints return a structured `401 Unauthorized` JSON response.
-
----
-
-## Environment Variables Configuration
-
-Configure the following environment variables on your server or environment:
-
-| Variable Name | Description | Default / Example Value |
-|---|---|---|
-| `SUPABASE_DB_URL` | Supabase JDBC Database URL | `jdbc:postgresql://db.xxxxxx.supabase.co:5432/postgres` |
-| `SUPABASE_DB_USERNAME` | Supabase Database Username | `postgres` |
-| `SUPABASE_DB_PASSWORD` | Supabase Database Password | `YourSecurePassword123` |
-| `JWT_SECRET` | Base64/Hex secret key (min 256 bits / 32 bytes) | `404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970` |
-| `JWT_EXPIRATION` | Token expiration in milliseconds | `86400000` (24 Hours) |
-| `ADMIN_SEED_ENABLED` | Enable local default admin seeding | `true` |
-| `ADMIN_SEED_EMAIL` | Controlled default admin email | `admin@warrantyportal.com` |
-| `ADMIN_SEED_PASSWORD` | Controlled default admin password | `AdminPassword123` |
-
-### Setting Environment Variables locally:
-
-**PowerShell (Windows)**:
-```powershell
-$env:SUPABASE_DB_URL="jdbc:postgresql://db.xxxxxx.supabase.co:5432/postgres"
-$env:SUPABASE_DB_USERNAME="postgres"
-$env:SUPABASE_DB_PASSWORD="your_password"
-$env:JWT_SECRET="404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
-$env:JWT_EXPIRATION="86400000"
-```
-
----
-
-## Authentication API Endpoints
-
-### 1. Public Customer Registration
-**`POST /api/auth/register`**
-
-**Request Payload**:
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "Password123",
-  "phone": "9876543210"
-}
-```
-
-**Success Response (`201 Created`)**:
-```json
-{
-  "id": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "name": "John Doe",
-  "email": "john@example.com",
-  "phone": "9876543210",
-  "role": "CUSTOMER"
-}
-```
-
----
-
-### 2. User Login
-**`POST /api/auth/login`**
-
-**Request Payload**:
-```json
-{
-  "email": "john@example.com",
-  "password": "Password123"
-}
-```
-
-**Success Response (`200 OK`)**:
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huQGV4YW1wbGUuY29tIiwicm9sZSI6IkNVU1RPTUVSIiwiZXhwIjoxNzcxMjM0NTY3fQ.signature",
-  "tokenType": "Bearer",
-  "user": {
-    "id": "c7a84e31-8f5b-4c22-921a-123456789abc",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "phone": "9876543210",
-    "role": "CUSTOMER"
-  }
-}
-```
-
----
-
-### 3. Get Authenticated User Profile (Protected)
-**`GET /api/users/me`**  
-*Header required*: `Authorization: Bearer <token>`
-
-**Success Response (`200 OK`)**:
-```json
-{
-  "id": "c7a84e31-8f5b-4c22-921a-123456789abc",
-  "name": "John Doe",
-  "email": "john@example.com",
-  "phone": "9876543210",
-  "role": "CUSTOMER"
-}
-```
-
----
-
-### 4. Health Check (Public)
-**`GET /api/health`**
-
-**Success Response (`200 OK`)**:
-```json
-{
-  "status": "UP",
-  "message": "Product Warranty Registration Portal is running",
-  "timestamp": "2026-08-13T21:55:00"
-}
-```
-
----
-
-## Controlled First Admin Creation for Testing
-
-To create the initial administrator for testing:
-1. Set the following environment variables (or rely on default properties in `application.properties`):
-   ```bash
-   ADMIN_SEED_ENABLED=true
-   ADMIN_SEED_EMAIL=admin@warrantyportal.com
-   ADMIN_SEED_PASSWORD=AdminPassword123
-   ```
-2. Start the Spring Boot application. The `AdminInitializer` checks if an `ADMIN` user exists. If not, it creates the admin account automatically.
-3. Authenticate as Admin:
-   ```http
-   POST /api/auth/login
-   {
-     "email": "admin@warrantyportal.com",
-     "password": "AdminPassword123"
-   }
-   ```
-
+### Instructions:
+1. Import `warranty_portal_postman_collection.json` into Postman.
+2. Set environment variables `baseUrl` (`http://localhost:8080`), `customerToken`, and `adminToken`.
+3. Execute authentication requests (`Register Customer`, `Login Customer`, `Login Admin`) to auto-populate token variables.
