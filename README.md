@@ -1,4 +1,4 @@
-﻿# WarrantyHub — Product Warranty Registration Portal
+# WarrantyHub — Product Warranty Registration Portal
 
 > *"Your Warranties. Organized. Protected. Always Accessible."*
 
@@ -10,30 +10,37 @@
 
 ---
 
-## 🚦 Current Project Status: **PHASE 2 (Completed)**
+## 🚦 Current Project Status: **PHASE 3 (Completed)**
 
 ### Phase 1: Project Planning & Requirements
 - **Status:** **COMPLETED**
 - **Scope Completed:** Complete system architecture, data modeling, REST API contracts, security blueprint, and Google Stitch UI/UX design specifications.
-- **Specification Document:** [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md)
+- **Specification Document:** [PROJECT_REQUIREMENTS.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/PROJECT_REQUIREMENTS.md)
 
 ### Phase 2: Database Design & Supabase Setup
 - **Status:** **COMPLETED**
 - **PostgreSQL Database Designed:** Normalized 3NF schema targeting PostgreSQL 17 on Supabase.
-- **Required Tables Defined:**
-  - \users\: Customer & Admin authentication credentials, roles (\CUSTOMER\, \ADMIN\), and timestamps.
-  - \products\: Product metadata, purchase dates, serial numbers, and warranty durations.
-  - \warranties\: 1-to-1 derived warranty tracking records with status (\ACTIVE\, \EXPIRING_SOON\, \EXPIRED\).
-  - \invoices\: Metadata referencing stored purchase receipts in cloud object storage.
-  - \claims\: Customer-filed warranty claim records with state machine status tracking.
-- **Relationships Defined:** Strict foreign keys with safe deletion rules (\ON DELETE RESTRICT\ for users, products, invoices, and claims; \ON DELETE CASCADE\ for 1-to-1 product warranties).
-- **Constraints Defined:** Primary keys (UUID \gen_random_uuid()\), unique constraints (email, serial lookups, storage path), and domain check constraints (prices, durations, file sizes <= 10MB, status enums).
-- **Indexes Defined:** B-Tree indexing on foreign keys, email lookups, serial numbers, warranty expiry ranges, and claim statuses.
-- **Supabase Storage Configured:** Private \invoices\ storage bucket created with a 10 MB file size limit and MIME-type restrictions (\pplication/pdf\, \image/jpeg\, \image/png\).
+- **Required Tables Defined:** `users`, `products`, `warranties`, `invoices`, `claims`.
+- **Relationships Defined:** Strict foreign keys with safe delete rules (`ON DELETE RESTRICT` for users, products, invoices, and claims; `ON DELETE CASCADE` for 1-to-1 product warranties).
+- **Constraints & Indexes:** Primary keys (UUID `gen_random_uuid()`), unique constraints, domain check constraints, and 15+ B-Tree indexes.
+- **Supabase Storage Configured:** Private `invoices` storage bucket (10 MB limit, PDF/JPEG/PNG).
 - **Security & RLS:** Row Level Security (RLS) enabled across all tables to block unauthorized PostgREST client queries while preserving full backend JDBC access for Spring Boot.
 - **Database Artifacts:**
-  - [database/schema.sql](database/schema.sql) — Full PostgreSQL DDL script with triggers and constraints.
-  - [database/DATABASE_DESIGN.md](database/DATABASE_DESIGN.md) — Exhaustive database architecture, data dictionary, and storage documentation.
+  - [database/schema.sql](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/database/schema.sql) — Full PostgreSQL DDL script with triggers and constraints.
+  - [database/DATABASE_DESIGN.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/database/DATABASE_DESIGN.md) — Exhaustive database architecture, data dictionary, and storage documentation.
+
+### Phase 3: Backend Initial Setup
+- **Status:** **COMPLETED**
+- **Spring Boot Backend Created:** Standardized Maven project under `backend/` using Spring Boot 3.2.5.
+- **Java 17 Baseline:** Strictly configured for Java 17 LTS (verified with OpenJDK 17.0.20 Temurin).
+- **Maven Configured:** Apache Maven 3.9.6 configured with Java 17 toolchain.
+- **Database Connectivity:** PostgreSQL JDBC driver and HikariCP connection pooling configured to connect to Supabase PostgreSQL with runtime environment variables.
+- **Environment Management:** [backend/.env.example](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/.env.example) template provided; `.env` protected by `.gitignore`.
+- **Package Architecture:** Layered packages established under `com.warrantyportal`: `config`, `controller`, `dto`, `entity`, `repository`, `security`, `service`.
+- **Health Endpoint:** `GET /api/health` implemented and verified returning `{"status": "UP", "application": "WarrantyHub"}`.
+- **CORS Configuration:** Local Vite frontend development origin (`http://localhost:5173`) enabled.
+- **Testing & Verification:** `mvn clean test` executed successfully (2 passing tests); application startup verified on `http://localhost:8080`.
+- **Developer Guide:** [backend/BACKEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/BACKEND_SETUP.md) authored with setup and troubleshooting details.
 
 ---
 
@@ -42,9 +49,9 @@
 | Layer | Technologies Selected |
 | :--- | :--- |
 | **Frontend** | React.js (v18), Vite, JavaScript (ESNext), React Router (v6), Axios, Modern CSS System |
-| **Backend** | Java 17 (LTS), Spring Boot 3.2.x, Spring Web, Spring Data JPA, Hibernate, Spring Security, JWT (JJWT), Maven |
+| **Backend** | Java 17 (LTS), Spring Boot 3.2.x (3.2.5), Spring Web, Spring Data JPA, Hibernate, Spring Security, JWT (JJWT), Maven 3.9.6 |
 | **Database** | PostgreSQL 17 (hosted via Supabase) |
-| **File Storage** | Supabase Storage (Dedicated private invoices bucket) |
+| **File Storage** | Supabase Storage (Dedicated private `invoices` bucket) |
 | **Testing** | JUnit 5, Spring Boot Test, Mockito, Postman, Browser Testing |
 | **Version Control** | Git & GitHub |
 | **Development Environment** | Antigravity IDE |
@@ -56,9 +63,9 @@
 ### For Customers
 - **Authentication & Security:** Secure JWT-based self-registration and login with BCrypt password encryption.
 - **Product Registry:** Register purchased products with details like brand, model number, serial number, purchase date, price, and seller name.
-- **Automated Warranty Tracking:** Instant calculation of expiry dates (purchase date + warranty duration) with real-time status badges (ACTIVE, EXPIRING_SOON, EXPIRED).
+- **Automated Warranty Tracking:** Instant calculation of expiry dates (`purchase date + warranty duration`) with real-time status badges (`ACTIVE`, `EXPIRING_SOON`, `EXPIRED`).
 - **Digital Invoice Vault:** Upload and view purchase receipts (PDF, PNG, JPG up to 10 MB) securely stored in cloud object storage.
-- **Claim Submission & Tracking:** Submit warranty claims for defective products with transparent status tracking (PENDING, APPROVED, IN_PROGRESS, COMPLETED, CANCELLED).
+- **Claim Submission & Tracking:** Submit warranty claims for defective products with transparent status tracking (`PENDING`, `APPROVED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`).
 - **Personal Dashboard & Alerts:** Comprehensive dashboard displaying active coverage metrics and 30-day proactive expiration warnings.
 
 ### For Administrators
@@ -71,10 +78,10 @@
 
 ## 🗺️ Roadmap & Development Phases
 
-\\\
+```
 [x] PHASE 1:  Project Planning & Requirements (Completed)
 [x] PHASE 2:  Database Design & Supabase Setup (Completed)
-[ ] PHASE 3:  Backend Initial Setup (Spring Boot 3.2 / Java 17)
+[x] PHASE 3:  Backend Initial Setup (Spring Boot 3.2 / Java 17) (Completed)
 [ ] PHASE 4:  Backend Authentication & Security
 [ ] PHASE 5:  Frontend Initial Setup (React + Vite)
 [ ] PHASE 6:  Frontend Authentication & Route Guards
@@ -88,12 +95,13 @@
 [ ] PHASE 14: Integration & Testing
 [ ] PHASE 15: GitHub & Final Documentation
 [ ] PHASE 16: Deployment
-\\\
+```
 
 ---
 
 ## 📖 Documentation Reference
 
-- [PROJECT_REQUIREMENTS.md](PROJECT_REQUIREMENTS.md) — Complete 20-section system requirements and architectural specification.
-- [database/DATABASE_DESIGN.md](database/DATABASE_DESIGN.md) — Relational schema design, data dictionary, entity diagrams, and storage architecture.
-- [database/schema.sql](database/schema.sql) — Executable PostgreSQL DDL schema with triggers and constraints.
+- [PROJECT_REQUIREMENTS.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/PROJECT_REQUIREMENTS.md) — Complete 20-section system requirements and architectural specification.
+- [database/DATABASE_DESIGN.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/database/DATABASE_DESIGN.md) — Relational schema design, data dictionary, entity diagrams, and storage architecture.
+- [database/schema.sql](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/database/schema.sql) — Executable PostgreSQL DDL schema with triggers and constraints.
+- [backend/BACKEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/BACKEND_SETUP.md) — Developer setup, environment configuration, and execution instructions.
