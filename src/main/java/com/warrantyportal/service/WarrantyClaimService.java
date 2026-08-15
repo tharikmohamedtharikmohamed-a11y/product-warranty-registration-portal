@@ -148,6 +148,10 @@ public class WarrantyClaimService {
         WarrantyClaim claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new ResourceNotFoundException("Warranty claim not found with ID: " + claimId));
 
+        if (!isValidStatusTransition(claim.getStatus(), request.getStatus())) {
+            throw new InvalidClaimException("Invalid claim status transition from " + claim.getStatus() + " to " + request.getStatus());
+        }
+
         claim.setStatus(request.getStatus());
         if (request.getResolutionNotes() != null && !request.getResolutionNotes().isBlank()) {
             claim.setResolution(request.getResolutionNotes());
@@ -155,5 +159,17 @@ public class WarrantyClaimService {
 
         WarrantyClaim updatedClaim = claimRepository.save(claim);
         return ClaimResponse.fromEntity(updatedClaim);
+    }
+
+    private boolean isValidStatusTransition(ClaimStatus currentStatus, ClaimStatus newStatus) {
+        if (currentStatus == newStatus) {
+            return true;
+        }
+        return switch (currentStatus) {
+            case PENDING -> newStatus == ClaimStatus.APPROVED || newStatus == ClaimStatus.REJECTED || newStatus == ClaimStatus.IN_PROGRESS || newStatus == ClaimStatus.CANCELLED;
+            case IN_PROGRESS -> newStatus == ClaimStatus.APPROVED || newStatus == ClaimStatus.REJECTED || newStatus == ClaimStatus.COMPLETED || newStatus == ClaimStatus.CANCELLED;
+            case APPROVED -> newStatus == ClaimStatus.IN_PROGRESS || newStatus == ClaimStatus.COMPLETED || newStatus == ClaimStatus.CANCELLED;
+            case REJECTED, COMPLETED, CANCELLED -> false;
+        };
     }
 }

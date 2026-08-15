@@ -15,4 +15,5 @@ public interface WarrantyClaimRepository extends JpaRepository<WarrantyClaim, UU
     List<WarrantyClaim> findByWarrantyId(UUID warrantyId);
     List<WarrantyClaim> findByStatus(ClaimStatus status);
     boolean existsByWarrantyIdAndStatusIn(UUID warrantyId, List<ClaimStatus> statuses);
+    long countByStatus(ClaimStatus status);
 }
