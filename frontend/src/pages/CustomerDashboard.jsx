@@ -53,9 +53,14 @@ export const CustomerDashboard = () => {
 
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">Welcome, {user?.name || 'Customer'}</h1>
-        <p className="page-subtitle">Manage your products and track your warranty coverage.</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1 className="page-title">Welcome, {user?.name || 'Customer'}</h1>
+          <p className="page-subtitle">Manage your products and track your warranty coverage.</p>
+        </div>
+        <Link to="/products/register" className="btn btn-primary">
+          + Register Product
+        </Link>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
@@ -106,16 +111,26 @@ export const CustomerDashboard = () => {
           <div className="dashboard-section">
             <div className="section-header">
               <h2 className="section-title">My Registered Products</h2>
-              <Link to="/products" className="btn btn-secondary btn-sm">
-                View All ({products.length})
-              </Link>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <Link to="/products/register" className="btn btn-primary btn-sm">
+                  + Register Product
+                </Link>
+                <Link to="/products" className="btn btn-secondary btn-sm">
+                  View All ({products.length})
+                </Link>
+              </div>
             </div>
 
             {products.length === 0 ? (
               <div className="empty-state">
                 <span className="empty-icon">📦</span>
                 <h3 className="empty-title">No products registered yet</h3>
-                <p className="empty-desc">Your registered products will appear here once added to your account.</p>
+                <p className="empty-desc" style={{ marginBottom: '1.25rem' }}>
+                  Your registered products will appear here once added to your account.
+                </p>
+                <Link to="/products/register" className="btn btn-primary">
+                  Register Your First Product
+                </Link>
               </div>
             ) : (
               <div className="table-container" style={{ margin: 0 }}>

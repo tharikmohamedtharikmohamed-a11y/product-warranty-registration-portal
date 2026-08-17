@@ -10,7 +10,10 @@ import { LoginPage } from './pages/LoginPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 import { CustomerDashboard } from './pages/CustomerDashboard';
 import { MyProducts } from './pages/MyProducts';
+import { RegisterProduct } from './pages/RegisterProduct';
+import { EditProduct } from './pages/EditProduct';
 import { ProductDetails } from './pages/ProductDetails';
+import { InvoiceManagement } from './pages/InvoiceManagement';
 import { MyWarranties } from './pages/MyWarranties';
 import { WarrantyDetails } from './pages/WarrantyDetails';
 
@@ -35,7 +38,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-            {/* Phase 10 Protected Customer Routes */}
+            {/* Protected Customer Routes */}
             <Route
               path="/dashboard"
               element={
@@ -49,6 +52,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MyProducts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products/register"
+              element={
+                <ProtectedRoute>
+                  <RegisterProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products/:id/invoices"
+              element={
+                <ProtectedRoute>
+                  <InvoiceManagement />
                 </ProtectedRoute>
               }
             />

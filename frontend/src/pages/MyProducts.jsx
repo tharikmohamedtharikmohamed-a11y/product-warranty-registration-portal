@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { productService } from '../services/productService';
 
 export const MyProducts = () => {
+  const location = useLocation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(location.state?.successMessage || '');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -39,11 +41,17 @@ export const MyProducts = () => {
 
   return (
     <div>
-      <div className="page-header">
-        <h1 className="page-title">My Registered Products</h1>
-        <p className="page-subtitle">View all products registered under your account.</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1 className="page-title">My Registered Products</h1>
+          <p className="page-subtitle">View all products registered under your account.</p>
+        </div>
+        <Link to="/products/register" className="btn btn-primary">
+          + Register Product
+        </Link>
       </div>
 
+      {successMessage && <div className="alert alert-success">{successMessage}</div>}
       {error && <div className="alert alert-error">{error}</div>}
 
       {loading ? (
@@ -55,7 +63,12 @@ export const MyProducts = () => {
         <div className="empty-state">
           <span className="empty-icon">📦</span>
           <h3 className="empty-title">No products registered yet</h3>
-          <p className="empty-desc">You do not have any products registered in your account.</p>
+          <p className="empty-desc" style={{ marginBottom: '1.5rem' }}>
+            You do not have any products registered in your account.
+          </p>
+          <Link to="/products/register" className="btn btn-primary">
+            Register Your First Product
+          </Link>
         </div>
       ) : (
         <div className="table-container">
@@ -81,9 +94,14 @@ export const MyProducts = () => {
                   <td>{product.purchaseDate ? new Date(product.purchaseDate).toLocaleDateString() : 'N/A'}</td>
                   <td>{renderStatusBadge(product.warranty?.status)}</td>
                   <td>
-                    <Link to={`/products/${product.id}`} className="btn btn-secondary btn-sm">
-                      View Details
-                    </Link>
+                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <Link to={`/products/${product.id}`} className="btn btn-secondary btn-sm">
+                        Details
+                      </Link>
+                      <Link to={`/products/${product.id}/invoices`} className="btn btn-secondary btn-sm">
+                        📄 Invoices
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

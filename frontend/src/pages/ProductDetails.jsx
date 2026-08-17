@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { productService } from '../services/productService';
 
 export const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(location.state?.successMessage || '');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -24,6 +30,22 @@ export const ProductDetails = () => {
 
     fetchProduct();
   }, [id]);
+
+  const handleDelete = async () => {
+    try {
+      setDeleting(true);
+      setError('');
+      await productService.deleteProduct(id);
+      navigate('/products', {
+        state: { successMessage: 'Product deleted successfully.' },
+      });
+    } catch (err) {
+      setError(err.message || 'Unable to delete product. Please try again.');
+      setShowDeleteModal(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const renderStatusBadge = (status) => {
     switch (status) {
@@ -49,16 +71,36 @@ export const ProductDetails = () => {
 
   return (
     <div>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 className="page-title">Product Details</h1>
           <p className="page-subtitle">Complete specs and warranty status for this product.</p>
         </div>
-        <Link to="/products" className="btn btn-secondary btn-sm">
-          ← Back to Products
-        </Link>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <Link to="/products" className="btn btn-secondary btn-sm">
+            ← Back to Products
+          </Link>
+          {product && (
+            <>
+              <Link to={`/products/${id}/invoices`} className="btn btn-primary btn-sm">
+                📄 Manage Invoices
+              </Link>
+              <Link to={`/products/${id}/edit`} className="btn btn-secondary btn-sm">
+                ✏️ Edit Product
+              </Link>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="btn btn-danger btn-sm"
+                disabled={deleting}
+              >
+                🗑️ Delete Product
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
+      {successMessage && <div className="alert alert-success">{successMessage}</div>}
       {error && <div className="alert alert-error">{error}</div>}
 
       {loading ? (
@@ -111,7 +153,7 @@ export const ProductDetails = () => {
               </div>
               <div className="details-item">
                 <span className="details-label">Price Paid</span>
-                <span className="details-value">{product.price ? `$${product.price.toFixed(2)}` : 'N/A'}</span>
+                <span className="details-value">{product.price !== null && product.price !== undefined ? `$${product.price.toFixed(2)}` : 'N/A'}</span>
               </div>
             </div>
 
@@ -155,8 +197,8 @@ export const ProductDetails = () => {
                 <div className="details-item">
                   <span className="details-label">Duration</span>
                   <span className="details-value">
-                    {product.warranty.warrantyDurationMonths
-                      ? `${product.warranty.warrantyDurationMonths} Months`
+                    {product.warranty.warrantyDurationMonths || product.warranty.warrantyPeriodMonths
+                      ? `${product.warranty.warrantyDurationMonths || product.warranty.warrantyPeriodMonths} Months`
                       : 'N/A'}
                   </span>
                 </div>
@@ -171,8 +213,78 @@ export const ProductDetails = () => {
               </div>
             </div>
           )}
+
+          {/* Invoice Management Shortcut Card */}
+          <div className="details-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Purchase Invoice & Receipts</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
+                Upload or view stored proof-of-purchase files for warranty verification.
+              </p>
+            </div>
+            <Link to={`/products/${id}/invoices`} className="btn btn-primary btn-sm">
+              📄 Manage Invoices
+            </Link>
+          </div>
         </>
       ) : null}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          padding: '1rem'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: 'var(--radius)',
+            padding: '2rem',
+            maxWidth: '450px',
+            width: '100%',
+            boxShadow: 'var(--shadow-lg)'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--error)' }}>
+              Confirm Product Deletion
+            </h3>
+            <p style={{ color: 'var(--text-dark)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
+              Are you sure you want to delete this product? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <>
+                    <span className="loading-spinner" /> Deleting product...
+                  </>
+                ) : (
+                  'Yes, Delete Product'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
