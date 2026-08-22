@@ -10,7 +10,7 @@
 
 ---
 
-## 🚦 Current Project Status: **PHASE 4 (Completed)**
+## 🚦 Current Project Status: **PHASE 6 (Completed)**
 
 ### Phase 1: Project Planning & Requirements
 - **Status:** **COMPLETED**
@@ -54,13 +54,36 @@
 - **Automated Testing Suite:** 18 passing tests covering registration, duplicate email rejection, BCrypt hashing, login success, invalid credentials, JWT generation, and protected `/me` endpoints.
 - **Authentication Guide:** [backend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/AUTHENTICATION.md) authored with endpoint specifications and cURL examples.
 
+### Phase 5: Frontend Initial Setup
+- **Status:** **COMPLETED**
+- **React & Vite Baseline:** Pinned strictly to React 18.x (`^18.3.1`) and Vite 5.x (`^5.4.14`) in `frontend/`.
+- **Routing Infrastructure:** React Router DOM 6.x configured with `AppRoutes`, `PublicLayout`, and `ProtectedRoute` prepared for Phase 6.
+- **HTTP Client:** Reusable Axios instance in `src/services/api.js` configured with `VITE_API_BASE_URL=http://localhost:8080`.
+- **Responsive Design System:** Pure Vanilla CSS in `src/index.css` with custom properties, typography, buttons, accessible focus states, and responsive breakpoints (desktop, tablet, mobile).
+- **WarrantyHub Landing Page:** Professional hero section, core feature breakdown (Product Registration, Automated Tracking, Invoice Vault, Claims), and live backend health telemetry status badge.
+- **Placeholder Views & 404 Routing:** Clean placeholder pages for `/login`, `/register`, `/forgot-password`, `/reset-password`, and custom 404 `/not-found`.
+- **Developer Guide:** [frontend/FRONTEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/FRONTEND_SETUP.md) authored detailing directory layout, commands, routes, and environment configuration.
+
+### Phase 6: Frontend Authentication & Route Guards
+- **Status:** **COMPLETED**
+- **Global Auth State (`AuthContext` & `useAuth`):** Centralized state management tracking `user`, `loading`, and `isAuthenticated` across the application.
+- **Local Storage JWT Token (`warrantyhub_token`):** Persisted locally and automatically rehydrated via `GET /api/auth/me` on application boot/refresh.
+- **Axios Interceptors:** Automatic Bearer token attachment on outgoing requests and centralized 401 handling with automatic session purge.
+- **Interactive Registration (`/register`):** Full client-side validation, password confirmation, duplicate email detection (409 Conflict), and automatic navigation to login.
+- **Interactive Login (`/login`):** Validated sign-in form, show/hide password toggle, generic error alerts (401 Unauthorized), and immediate redirect to `/dashboard`.
+- **Route Guards:**
+  - `ProtectedRoute`: Guards `/dashboard`, rendering an accessible spinner during session verification and redirecting unauthenticated visitors to `/login`.
+  - `PublicRoute`: Guards `/login` and `/register`, redirecting logged-in customers straight to `/dashboard`.
+- **Authentication-Aware Navigation:** Navbar adapts dynamically, displaying Dashboard navigation, active user greeting, and Logout action button when authenticated.
+- **Authentication Guide:** [frontend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/AUTHENTICATION.md) authored with architecture diagrams, workflows, and test steps.
+
 ---
 
 ## 🛠️ Technology Stack
 
 | Layer | Technologies Selected |
 | :--- | :--- |
-| **Frontend** | React.js (v18), Vite, JavaScript (ESNext), React Router (v6), Axios, Modern CSS System |
+| **Frontend** | React.js (v18), Vite (v5), JavaScript (ESNext), React Router (v6), Axios, Modern CSS System |
 | **Backend** | Java 17 (LTS), Spring Boot 3.2.5, Spring Security 6.x, Spring Data JPA, Hibernate 6.4, JWT (JJWT 0.12.5), Maven 3.9.6 |
 | **Database** | PostgreSQL 17 (hosted via Supabase) |
 | **File Storage** | Supabase Storage (Dedicated private `invoices` bucket) |
@@ -95,8 +118,8 @@
 [x] PHASE 2:  Database Design & Supabase Setup (Completed)
 [x] PHASE 3:  Backend Initial Setup (Spring Boot 3.2 / Java 17) (Completed)
 [x] PHASE 4:  Backend Authentication & Security (Completed)
-[ ] PHASE 5:  Frontend Initial Setup (React + Vite)
-[ ] PHASE 6:  Frontend Authentication & Route Guards
+[x] PHASE 5:  Frontend Initial Setup (React + Vite) (Completed)
+[x] PHASE 6:  Frontend Authentication & Route Guards (Completed)
 [ ] PHASE 7:  Product Management Module
 [ ] PHASE 8:  Warranty Lifecycle Management
 [ ] PHASE 9:  Invoice Management & Storage
@@ -118,3 +141,7 @@
 - [database/schema.sql](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/database/schema.sql) — Executable PostgreSQL DDL schema with triggers and constraints.
 - [backend/BACKEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/BACKEND_SETUP.md) — Developer setup, environment configuration, and execution instructions.
 - [backend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/AUTHENTICATION.md) — Authentication architecture, JWT token flow, request/response models, and security rules.
+- [frontend/FRONTEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/FRONTEND_SETUP.md) — Frontend developer guide, directory layout, commands, routes, and environment configuration.
+- [frontend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/AUTHENTICATION.md) — Frontend authentication architecture, JWT lifecycle, route guards, and test guide.
+
+
