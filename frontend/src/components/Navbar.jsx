@@ -48,11 +48,28 @@ export default function Navbar() {
               </Link>
             </li>
             {isAuthenticated ? (
-              <li>
-                <Link to="/dashboard" className="nav-link" style={{ fontWeight: '600', color: 'var(--primary)' }}>
-                  Dashboard
-                </Link>
-              </li>
+              <>
+                <li>
+                  <Link to="/dashboard" className="nav-link">
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/products" className="nav-link">
+                    My Products
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/warranties" className="nav-link" style={{ fontWeight: '600', color: 'var(--primary)' }}>
+                    My Warranties
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/products/register" className="nav-link">
+                    Register Product
+                  </Link>
+                </li>
+              </>
             ) : (
               <>
                 <li>
