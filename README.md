@@ -10,7 +10,7 @@
 
 ---
 
-## 🚦 Current Project Status: **PHASE 6 (Completed)**
+## 🚦 Current Project Status: **PHASE 7 (Completed)**
 
 ### Phase 1: Project Planning & Requirements
 - **Status:** **COMPLETED**
@@ -77,6 +77,36 @@
 - **Authentication-Aware Navigation:** Navbar adapts dynamically, displaying Dashboard navigation, active user greeting, and Logout action button when authenticated.
 - **Authentication Guide:** [frontend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/AUTHENTICATION.md) authored with architecture diagrams, workflows, and test steps.
 
+### Phase 7: Product Management Module
+- **Status:** **COMPLETED**
+- **Product Entity & Schema Mapping:** JPA entity `Product.java` mapped to `products` table with UUID primary keys and foreign key binding to `users.id`.
+- **Automated Warranty Provisioning:** Registering a product transactionally provisions a 1-to-1 active warranty record in `warranties` with calculated `expiryDate = purchaseDate + warrantyDurationMonths`.
+- **Warranty Recalibration on Edit:** Editing product purchase date or duration automatically recalculates existing warranty start and expiry dates.
+- **Strict Customer Isolation:** Spring Security `@AuthenticationPrincipal` enforces per-customer query filtering; cross-customer access returns HTTP 404 Not Found to prevent data discovery.
+- **Duplicate Serial Detection:** Rejects duplicate serial numbers for the same customer with HTTP 409 Conflict.
+- **Cascaded Deletion:** Deleting a product automatically cascades deletion to its associated warranty record.
+- **Frontend Product Portfolio (`/products`):** Interactive card grid with search, category/status filters, real-time portfolio metrics strip, empty states, and delete confirmation modal.
+- **Validated Registration Form (`/products/register`):** Comprehensive input validation, dynamic live warranty calculation preview card, and field-level error mapping.
+- **Product Details & Warranty Timeline (`/products/:id`):** Full specification inspection, 1-click serial clipboard copy, and visual warranty elapsed progress bar.
+- **Product Edit Interface (`/products/:id/edit`):** Pre-populated edit form with live recalculated warranty preview and instant synchronization.
+- **Developer Guides:**
+  - [backend/PRODUCT_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/PRODUCT_MANAGEMENT.md) — Backend entity architecture, REST APIs, ownership rules, and test coverage.
+  - [frontend/PRODUCT_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/PRODUCT_MANAGEMENT.md) — Frontend routes, UI components, validation, and user flows.
+
+### Phase 8: Warranty Lifecycle Management
+- **Status:** **COMPLETED**
+- **Dynamic Status Evaluation:** Authoritative backend calculation of warranty states (`ACTIVE`, `EXPIRING_SOON`, `EXPIRED`) based on evaluation date and expiry date thresholds.
+- **Days Remaining Calculation:** Safe countdown calculation ensuring non-negative values and returning 0 for expired warranties.
+- **Elapsed Duration Progress:** Normalized percentage tracking `progressPercentage` (0% to 100%) reflecting elapsed warranty lifespan.
+- **Automatic Status Synchronization:** Queries trigger automatic on-read status checks that persist state changes to the database without requiring cron/batch overhead.
+- **Customer Scoping & 404 Protection:** Warranty lookups enforce `Warranty -> Product -> User` isolation via `findAllByProductUserId`, `findByIdAndProductUserId`, and `findByProductIdAndProductUserId`.
+- **Warranty Portfolio (`/warranties`):** Comprehensive customer warranty tracking dashboard featuring metrics counters, search, status filtering, accessible progress bars, and direct product links.
+- **Warranty Details Page (`/warranties/:id`):** Granular coverage review, official expiry dates, status advisories, and accessible progress indicators (`role="progressbar"`).
+- **Product Details Integration:** Updated `ProductDetailsPage` to query `/api/products/{productId}/warranty` and showcase a dedicated Warranty Protection panel.
+- **Developer Guides:**
+  - [backend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/WARRANTY_MANAGEMENT.md) — Warranty entity, status calculation rules, progress formulas, REST APIs, and test coverage.
+  - [frontend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/WARRANTY_MANAGEMENT.md) — Frontend routes, UI components, accessible progress bars, and user flows.
+
 ---
 
 ## 🛠️ Technology Stack
@@ -120,8 +150,8 @@
 [x] PHASE 4:  Backend Authentication & Security (Completed)
 [x] PHASE 5:  Frontend Initial Setup (React + Vite) (Completed)
 [x] PHASE 6:  Frontend Authentication & Route Guards (Completed)
-[ ] PHASE 7:  Product Management Module
-[ ] PHASE 8:  Warranty Lifecycle Management
+[x] PHASE 7:  Product Management Module (Completed)
+[x] PHASE 8:  Warranty Lifecycle Management (Completed)
 [ ] PHASE 9:  Invoice Management & Storage
 [ ] PHASE 10: Warranty Claims Engine
 [ ] PHASE 11: Admin Management Module
@@ -141,7 +171,11 @@
 - [database/schema.sql](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/database/schema.sql) — Executable PostgreSQL DDL schema with triggers and constraints.
 - [backend/BACKEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/BACKEND_SETUP.md) — Developer setup, environment configuration, and execution instructions.
 - [backend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/AUTHENTICATION.md) — Authentication architecture, JWT token flow, request/response models, and security rules.
+- [backend/PRODUCT_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/PRODUCT_MANAGEMENT.md) — Backend product management entity architecture, REST APIs, ownership rules, and test coverage.
+- [backend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/WARRANTY_MANAGEMENT.md) — Backend warranty management entity architecture, lifecycle calculations, REST APIs, and test coverage.
 - [frontend/FRONTEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/FRONTEND_SETUP.md) — Frontend developer guide, directory layout, commands, routes, and environment configuration.
 - [frontend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/AUTHENTICATION.md) — Frontend authentication architecture, JWT lifecycle, route guards, and test guide.
+- [frontend/PRODUCT_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/PRODUCT_MANAGEMENT.md) — Frontend product routes, UI components, validation, and user flows.
+- [frontend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/WARRANTY_MANAGEMENT.md) — Frontend warranty routes, UI components, accessible progress bars, and user flows.
 
 
