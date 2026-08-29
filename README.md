@@ -10,7 +10,7 @@
 
 ---
 
-## 🚦 Current Project Status: **PHASE 7 (Completed)**
+## 🚦 Current Project Status: **PHASE 10 (Completed)**
 
 ### Phase 1: Project Planning & Requirements
 - **Status:** **COMPLETED**
@@ -107,6 +107,39 @@
   - [backend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/WARRANTY_MANAGEMENT.md) — Warranty entity, status calculation rules, progress formulas, REST APIs, and test coverage.
   - [frontend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/WARRANTY_MANAGEMENT.md) — Frontend routes, UI components, accessible progress bars, and user flows.
 
+### Phase 9: Invoice Management & Supabase Storage
+- **Status:** **COMPLETED**
+- **Supabase Storage Integration:** Dedicated backend storage adapter (`SupabaseStorageService`) communicating with private `invoices` bucket over HTTP REST API using native Java 17 `HttpClient`.
+- **Zero Frontend Secrets:** Supabase service-role keys and private bucket credentials remain strictly confined to the Spring Boot backend environment.
+- **Invoice Upload (`POST /api/invoices/upload`):** Ingests proof-of-purchase documents (`multipart/form-data`) for authenticated user's products.
+- **Comprehensive File Validation:** Enforces non-empty payloads, maximum 10 MB file size limit, and strict MIME type / extension checks (`application/pdf`, `image/jpeg`, `image/jpg`, `image/png`).
+- **Hierarchical Secure Storage Paths:** Formats objects as `invoices/{userId}/{productId}/{uuid}_{sanitizedFileName}` to prevent path traversal and object collisions.
+- **Compensating Rollback:** If PostgreSQL metadata insertion fails after binary upload, an automatic compensating delete is executed against Supabase Storage.
+- **Invoice Listing & Detail APIs:** Customer-scoped queries (`GET /api/invoices`, `GET /api/invoices/{id}`, `GET /api/products/{productId}/invoice`) returning clean DTOs without leaking internal storage keys.
+- **Secure File Download & Preview:** Streams binary contents directly through Spring Boot with proper `Content-Type` and `Content-Disposition` headers (`attachment` for download, `inline` for browser view).
+- **Invoice Deletion (`DELETE /api/invoices/{id}`):** Deletes binary object from Supabase Storage and purges metadata from PostgreSQL table `invoices`.
+- **Product Details Integration:** Replaced phase placeholder on `ProductDetailsPage` with an interactive Purchase Invoice panel supporting instant upload, preview, download, and removal.
+- **Customer Invoice Vault (`/invoices`):** Dedicated page listing all invoices with format badges, formatted sizes, upload dates, and action buttons.
+- **Developer Guides:**
+  - [backend/INVOICE_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/INVOICE_MANAGEMENT.md) — Storage architecture, entity mapping, REST APIs, compensating rollbacks, and test coverage.
+  - [frontend/INVOICE_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/INVOICE_MANAGEMENT.md) — Frontend routes, upload modal, product invoice panel, and user flows.
+
+### Phase 10: Warranty Claims Engine
+- **Status:** **COMPLETED**
+- **Claims Entity & Schema Compatibility:** Mapped JPA entity `Claim.java` to PostgreSQL table `claims` (`issue_description` mapped as `claimReason`, `additional_information` as `description` with alias getters/setters) to strictly preserve `spring.jpa.hibernate.ddl-auto=validate`.
+- **Warranty Status Eligibility:** Claims can only be filed against active or expiring-soon warranties; expired warranties reject claim filing with HTTP 400 Bad Request.
+- **Initial Status Enforcement:** Initial claim status is immutably set to `PENDING` by the backend.
+- **Strict Anti-IDOR Ownership:** Product and claim lookups enforce customer ownership; attempts to access or cancel unowned claims return HTTP 404 Not Found.
+- **Self-Service Cancellation:** Customers can cancel their own claims if and only if status is `PENDING` (`PATCH /api/claims/{id}/cancel`); non-pending cancellations return HTTP 400 Bad Request.
+- **REST Endpoints (`ClaimController`):** `POST /api/claims`, `GET /api/claims`, `GET /api/claims/{id}`, `PATCH /api/claims/{id}/cancel`, `GET /api/products/{productId}/claims`.
+- **Dedicated Claims Dashboard (`/claims`):** Filter by status, search by product/reason, and launch "+ File Claim" modal.
+- **Claim Details Page (`/claims/:id`):** Full status timeline, product specifications, issue description, and accessible cancel modal.
+- **Product Details Integration:** Interactive Warranty Claims card in right column with count badge, filing trigger, and quick links.
+- **Automated Test Suite:** 27 automated tests (`ClaimServiceTest` and `ClaimControllerTest`) covering eligibility, ownership, status transitions, and anti-IDOR protections (111 tests passing overall with 0 failures).
+- **Developer Guides:**
+  - [backend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/CLAIMS_MANAGEMENT.md) — Backend entity mapping, claim lifecycle, validation rules, REST APIs, and test coverage.
+  - [frontend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/CLAIMS_MANAGEMENT.md) — Frontend routes, submit modal, claim details timeline, and user flows.
+
 ---
 
 ## 🛠️ Technology Stack
@@ -129,9 +162,9 @@
 - **Authentication & Security:** Secure JWT-based self-registration and login with BCrypt password encryption.
 - **Product Registry:** Register purchased products with details like brand, model number, serial number, purchase date, price, and seller name.
 - **Automated Warranty Tracking:** Instant calculation of expiry dates (`purchase date + warranty duration`) with real-time status badges (`ACTIVE`, `EXPIRING_SOON`, `EXPIRED`).
-- **Digital Invoice Vault:** Upload and view purchase receipts (PDF, PNG, JPG up to 10 MB) securely stored in cloud object storage.
+- **Digital Invoice Vault:** Upload, view, and download purchase receipts (PDF, PNG, JPG up to 10 MB) securely stored in private cloud object storage.
 - **Claim Submission & Tracking:** Submit warranty claims for defective products with transparent status tracking (`PENDING`, `APPROVED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`).
-- **Personal Dashboard & Alerts:** Comprehensive dashboard displaying active coverage metrics and 30-day proactive expiration warnings.
+- **Personal Dashboard & Alerts:** Comprehensive dashboard displaying active coverage metrics, quick invoice vault access, and 30-day proactive expiration warnings.
 
 ### For Administrators
 - **Global Overview:** High-level platform KPIs covering active warranties, user accounts, and claim backlogs.
@@ -152,8 +185,8 @@
 [x] PHASE 6:  Frontend Authentication & Route Guards (Completed)
 [x] PHASE 7:  Product Management Module (Completed)
 [x] PHASE 8:  Warranty Lifecycle Management (Completed)
-[ ] PHASE 9:  Invoice Management & Storage
-[ ] PHASE 10: Warranty Claims Engine
+[x] PHASE 9:  Invoice Management & Storage (Completed)
+[x] PHASE 10: Warranty Claims Engine (Completed)
 [ ] PHASE 11: Admin Management Module
 [ ] PHASE 12: Dashboard Analytics & Notifications
 [ ] PHASE 13: Google Stitch UI Implementation
@@ -173,9 +206,14 @@
 - [backend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/AUTHENTICATION.md) — Authentication architecture, JWT token flow, request/response models, and security rules.
 - [backend/PRODUCT_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/PRODUCT_MANAGEMENT.md) — Backend product management entity architecture, REST APIs, ownership rules, and test coverage.
 - [backend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/WARRANTY_MANAGEMENT.md) — Backend warranty management entity architecture, lifecycle calculations, REST APIs, and test coverage.
+- [backend/INVOICE_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/INVOICE_MANAGEMENT.md) — Backend invoice management entity architecture, Supabase storage integration, REST APIs, and test coverage.
+- [backend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/CLAIMS_MANAGEMENT.md) — Backend warranty claims entity architecture, validation rules, REST APIs, and test coverage.
 - [frontend/FRONTEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/FRONTEND_SETUP.md) — Frontend developer guide, directory layout, commands, routes, and environment configuration.
 - [frontend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/AUTHENTICATION.md) — Frontend authentication architecture, JWT lifecycle, route guards, and test guide.
 - [frontend/PRODUCT_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/PRODUCT_MANAGEMENT.md) — Frontend product routes, UI components, validation, and user flows.
 - [frontend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/WARRANTY_MANAGEMENT.md) — Frontend warranty routes, UI components, accessible progress bars, and user flows.
+- [frontend/INVOICE_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/INVOICE_MANAGEMENT.md) — Frontend invoice routes, upload modal, product invoice panel, and user flows.
+- [frontend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/CLAIMS_MANAGEMENT.md) — Frontend warranty claim routes, submit modal, claim details timeline, and user flows.
+
 
 
