@@ -13,13 +13,16 @@ import ProductDetailsPage from '../pages/ProductDetailsPage';
 import EditProductPage from '../pages/EditProductPage';
 import WarrantiesPage from '../pages/WarrantiesPage';
 import WarrantyDetailsPage from '../pages/WarrantyDetailsPage';
+import InvoicesPage from '../pages/InvoicesPage';
+import ClaimsPage from '../pages/ClaimsPage';
+import ClaimDetailsPage from '../pages/ClaimDetailsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 
 /**
  * Main Application Routing.
- * Phase 8 — Warranty Management
+ * Phase 10 — Warranty Claims
  */
 export default function AppRoutes() {
   return (
@@ -45,6 +48,9 @@ export default function AppRoutes() {
           <Route path="/products/:id/edit" element={<EditProductPage />} />
           <Route path="/warranties" element={<WarrantiesPage />} />
           <Route path="/warranties/:id" element={<WarrantyDetailsPage />} />
+          <Route path="/invoices" element={<InvoicesPage />} />
+          <Route path="/claims" element={<ClaimsPage />} />
+          <Route path="/claims/:id" element={<ClaimDetailsPage />} />
         </Route>
 
         {/* 404 Catch-All Route */}

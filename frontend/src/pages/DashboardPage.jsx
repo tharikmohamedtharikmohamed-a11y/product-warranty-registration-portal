@@ -59,13 +59,13 @@ export default function DashboardPage() {
       >
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(37, 99, 235, 0.2)', color: '#93c5fd', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', fontSize: 'var(--font-size-xs)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-            Customer Portal • Phase 7
+            Customer Portal • Phase 10
           </div>
           <h1 style={{ fontSize: 'var(--font-size-3xl)', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>
             Welcome back, {user?.name || 'User'}!
           </h1>
           <p style={{ color: '#94a3b8', fontSize: 'var(--font-size-sm)', maxWidth: '520px', lineHeight: '1.5' }}>
-            WarrantyHub is currently tracking your equipment lifecycle, active warranty validity dates, and proof-of-purchase terms.
+            WarrantyHub is currently tracking your equipment lifecycle, active warranty validity dates, purchase invoices, and warranty claims.
           </p>
         </div>
 
@@ -75,6 +75,12 @@ export default function DashboardPage() {
           </Link>
           <Link to="/warranties" className="btn btn-secondary btn-md" style={{ color: '#ffffff', borderColor: '#475569', backgroundColor: '#334155' }}>
             View Warranties
+          </Link>
+          <Link to="/invoices" className="btn btn-secondary btn-md" style={{ color: '#ffffff', borderColor: '#475569', backgroundColor: '#334155' }}>
+            My Invoices
+          </Link>
+          <Link to="/claims" className="btn btn-secondary btn-md" style={{ color: '#ffffff', borderColor: '#475569', backgroundColor: '#334155' }}>
+            My Claims
           </Link>
           <Link to="/products" className="btn btn-ghost btn-md" style={{ color: '#93c5fd' }}>
             Products

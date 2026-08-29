@@ -302,9 +302,22 @@ export default function WarrantyDetailsPage() {
             <h3 style={{ fontSize: 'var(--font-size-xs)', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
               Warranty Claim Eligibility
             </h3>
-            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-              Claims and proof-of-purchase invoice management will be integrated in subsequent phases.
-            </p>
+            {warranty.status !== 'EXPIRED' ? (
+              <div>
+                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)', lineHeight: '1.5', marginBottom: '0.75rem' }}>
+                  ✓ This warranty is active and eligible for claims. You can submit or track claims directly from the product specifications page.
+                </p>
+                {warranty.productId && (
+                  <Link to={`/products/${warranty.productId}`} className="btn btn-secondary btn-sm" style={{ width: '100%', textAlign: 'center' }}>
+                    File / Manage Claims on Product →
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--danger)', lineHeight: '1.5', margin: 0 }}>
+                ✕ This warranty is expired. New warranty claims cannot be submitted for this product.
+              </p>
+            )}
           </div>
         </div>
       </div>

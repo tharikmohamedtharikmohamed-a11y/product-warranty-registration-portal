@@ -60,8 +60,18 @@ export default function Navbar() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/warranties" className="nav-link" style={{ fontWeight: '600', color: 'var(--primary)' }}>
+                  <Link to="/warranties" className="nav-link">
                     My Warranties
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/invoices" className="nav-link">
+                    My Invoices
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/claims" className="nav-link">
+                    My Claims
                   </Link>
                 </li>
                 <li>
