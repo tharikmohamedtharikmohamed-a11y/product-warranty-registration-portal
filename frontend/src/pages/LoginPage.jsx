@@ -70,8 +70,12 @@ export default function LoginPage() {
     setErrorMessage('');
 
     try {
-      await login(formData.email.trim(), formData.password);
-      navigate('/dashboard');
+      const loggedUser = await login(formData.email.trim(), formData.password);
+      if (loggedUser?.role === 'ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       if (error.response) {
         if (error.response.status === 401) {

@@ -33,4 +33,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, UUID> {
     boolean existsByStoragePath(String storagePath);
 
     long countByProductId(UUID productId);
+
+    @Query("SELECT i FROM Invoice i JOIN FETCH i.product p JOIN FETCH i.user u ORDER BY i.uploadedAt DESC")
+    List<Invoice> findAllWithProductAndUser();
 }

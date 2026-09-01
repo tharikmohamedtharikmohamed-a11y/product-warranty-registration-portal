@@ -175,6 +175,18 @@ public class InvoiceService {
     }
 
     /**
+     * Retrieves the binary content of an invoice for admin download or viewing across all customers.
+     */
+    @Transactional(readOnly = true)
+    public InvoiceDownload downloadInvoiceForAdmin(UUID invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found with id: " + invoiceId));
+
+        byte[] binaryData = supabaseStorageService.downloadFile(invoice.getStoragePath());
+        return new InvoiceDownload(binaryData, invoice.getFileName(), invoice.getFileType());
+    }
+
+    /**
      * Deletes an invoice from Supabase Storage and PostgreSQL metadata.
      * Enforces customer ownership.
      */

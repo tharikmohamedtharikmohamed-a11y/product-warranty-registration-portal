@@ -1,6 +1,7 @@
 package com.warrantyportal.repository;
 
 import com.warrantyportal.entity.Warranty;
+import com.warrantyportal.entity.WarrantyStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,7 @@ import java.util.UUID;
  * Spring Data JPA repository for Warranty entity operations.
  * Enforces customer scoping through product user ownership.
  * Phase 8 — Warranty Management
+ * Phase 11 — Admin Management Module
  */
 @Repository
 public interface WarrantyRepository extends JpaRepository<Warranty, UUID> {
@@ -30,4 +32,9 @@ public interface WarrantyRepository extends JpaRepository<Warranty, UUID> {
 
     @Query("SELECT w FROM Warranty w JOIN FETCH w.product p WHERE p.id = :productId AND p.user.id = :userId")
     Optional<Warranty> findByProductIdAndProductUserId(@Param("productId") UUID productId, @Param("userId") UUID userId);
+
+    long countByStatus(WarrantyStatus status);
+
+    @Query("SELECT w FROM Warranty w JOIN FETCH w.product p JOIN FETCH p.user ORDER BY w.expiryDate ASC")
+    List<Warranty> findAllWithProductAndUser();
 }

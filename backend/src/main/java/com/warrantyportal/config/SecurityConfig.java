@@ -59,13 +59,20 @@ public class SecurityConfig {
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.getWriter().write("{\"message\": \"Unauthorized access. Valid authentication token required.\"}");
                         })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.getWriter().write("{\"message\": \"Access denied. Admin privileges required.\"}");
+                        })
                 )
                 .authorizeHttpRequests(auth -> auth
                         // Public authentication endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
                         // Public health and telemetry endpoints
                         .requestMatchers(HttpMethod.GET, "/api/health", "/actuator/**").permitAll()
-                        // All other endpoints (including /api/auth/me) require authentication
+                        // Admin endpoints require ROLE_ADMIN
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

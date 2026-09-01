@@ -7,6 +7,7 @@ import useAuth from '../hooks/useAuth';
  * Brand: WarrantyHub
  * Tagline: "Your Warranties. Organized. Protected. Always Accessible."
  * Phase 6 — Frontend Authentication & Route Guards
+ * Phase 11 — Admin Management Module
  */
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -48,38 +49,73 @@ export default function Navbar() {
               </Link>
             </li>
             {isAuthenticated ? (
-              <>
-                <li>
-                  <Link to="/dashboard" className="nav-link">
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/products" className="nav-link">
-                    My Products
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/warranties" className="nav-link">
-                    My Warranties
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/invoices" className="nav-link">
-                    My Invoices
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/claims" className="nav-link">
-                    My Claims
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/products/register" className="nav-link">
-                    Register Product
-                  </Link>
-                </li>
-              </>
+              user?.role === 'ADMIN' ? (
+                <>
+                  <li>
+                    <Link to="/admin" className="nav-link">
+                      Admin Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin/users" className="nav-link">
+                      Users
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin/products" className="nav-link">
+                      Products
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin/warranties" className="nav-link">
+                      Warranties
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin/invoices" className="nav-link">
+                      Invoices
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin/claims" className="nav-link">
+                      Claims
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link to="/dashboard" className="nav-link">
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/products" className="nav-link">
+                      My Products
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/warranties" className="nav-link">
+                      My Warranties
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/invoices" className="nav-link">
+                      My Invoices
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/claims" className="nav-link">
+                      My Claims
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/products/register" className="nav-link">
+                      Register Product
+                    </Link>
+                  </li>
+                </>
+              )
             ) : (
               <>
                 <li>

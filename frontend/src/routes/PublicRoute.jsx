@@ -10,7 +10,7 @@ import Loading from '../components/Loading';
  * Phase 6 — Frontend Authentication & Route Guards
  */
 export default function PublicRoute() {
-  const { isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
@@ -20,9 +20,9 @@ export default function PublicRoute() {
     );
   }
 
-  // If already authenticated, redirect to /dashboard
+  // If already authenticated, redirect based on role
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return user?.role === 'ADMIN' ? <Navigate to="/admin" replace /> : <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

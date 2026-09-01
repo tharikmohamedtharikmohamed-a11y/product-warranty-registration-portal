@@ -1,6 +1,7 @@
 package com.warrantyportal.repository;
 
 import com.warrantyportal.entity.Claim;
+import com.warrantyportal.entity.ClaimStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,7 @@ import java.util.UUID;
  * Spring Data JPA repository for Claim entity operations.
  * Enforces customer scoping through user ownership.
  * Phase 10 — Warranty Claims
+ * Phase 11 — Admin Management Module
  */
 @Repository
 public interface ClaimRepository extends JpaRepository<Claim, UUID> {
@@ -28,4 +30,12 @@ public interface ClaimRepository extends JpaRepository<Claim, UUID> {
     List<Claim> findByProductIdAndUserIdOrderByCreatedAtDesc(@Param("productId") UUID productId, @Param("userId") UUID userId);
 
     long countByProductId(UUID productId);
+
+    long countByStatus(ClaimStatus status);
+
+    @Query("SELECT c FROM Claim c JOIN FETCH c.product p JOIN FETCH c.user u ORDER BY c.createdAt DESC")
+    List<Claim> findAllWithProductAndUser();
+
+    @Query("SELECT c FROM Claim c JOIN FETCH c.product p JOIN FETCH c.user u WHERE c.id = :id")
+    Optional<Claim> findByIdWithProductAndUser(@Param("id") UUID id);
 }

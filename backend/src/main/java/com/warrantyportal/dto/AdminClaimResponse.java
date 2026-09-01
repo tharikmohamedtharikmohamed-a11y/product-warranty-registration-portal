@@ -7,42 +7,53 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /**
- * Data transfer object returning customer-facing claim details,
- * associated product specifications, and current lifecycle status.
- * Phase 10 — Warranty Claims
+ * Administrative Data Transfer Object presenting complete warranty claim data,
+ * customer identification, product specifications, status, and internal admin notes.
+ * Phase 11 — Admin Management Module
  */
-public class ClaimResponse {
+public class AdminClaimResponse {
+
+    public static final String ADMIN_NOTE_DELIMITER = "\n---ADMIN_NOTE---\n";
 
     private UUID id;
     private UUID productId;
     private String productName;
     private String brand;
     private String modelNumber;
+    private UUID userId;
+    private String customerName;
+    private String customerEmail;
     private String claimReason;
     private String description;
+    private String adminNotes;
     private ClaimStatus status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
-    public ClaimResponse() {
+    public AdminClaimResponse() {
     }
 
-    public ClaimResponse(UUID id, UUID productId, String productName, String brand, String modelNumber,
-                         String claimReason, String description, ClaimStatus status,
-                         OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+    public AdminClaimResponse(UUID id, UUID productId, String productName, String brand,
+                              String modelNumber, UUID userId, String customerName, String customerEmail,
+                              String claimReason, String description, String adminNotes,
+                              ClaimStatus status, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         this.id = id;
         this.productId = productId;
         this.productName = productName;
         this.brand = brand;
         this.modelNumber = modelNumber;
+        this.userId = userId;
+        this.customerName = customerName;
+        this.customerEmail = customerEmail;
         this.claimReason = claimReason;
         this.description = description;
+        this.adminNotes = adminNotes;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public static ClaimResponse fromClaim(Claim claim) {
+    public static AdminClaimResponse fromClaim(Claim claim) {
         if (claim == null) {
             return null;
         }
@@ -51,7 +62,6 @@ public class ClaimResponse {
         String pName = null;
         String pBrand = null;
         String pModel = null;
-
         if (claim.getProduct() != null) {
             pId = claim.getProduct().getId();
             pName = claim.getProduct().getProductName();
@@ -59,19 +69,37 @@ public class ClaimResponse {
             pModel = claim.getProduct().getModelNumber();
         }
 
-        String customerDesc = claim.getDescription();
-        if (customerDesc != null && customerDesc.contains(AdminClaimResponse.ADMIN_NOTE_DELIMITER)) {
-            customerDesc = customerDesc.substring(0, customerDesc.indexOf(AdminClaimResponse.ADMIN_NOTE_DELIMITER));
+        UUID uId = null;
+        String uName = null;
+        String uEmail = null;
+        if (claim.getUser() != null) {
+            uId = claim.getUser().getId();
+            uName = claim.getUser().getName();
+            uEmail = claim.getUser().getEmail();
         }
 
-        return new ClaimResponse(
+        String rawDesc = claim.getDescription();
+        String customerDesc = rawDesc;
+        String adminNotes = null;
+
+        if (rawDesc != null && rawDesc.contains(ADMIN_NOTE_DELIMITER)) {
+            int idx = rawDesc.indexOf(ADMIN_NOTE_DELIMITER);
+            customerDesc = rawDesc.substring(0, idx);
+            adminNotes = rawDesc.substring(idx + ADMIN_NOTE_DELIMITER.length());
+        }
+
+        return new AdminClaimResponse(
                 claim.getId(),
                 pId,
                 pName,
                 pBrand,
                 pModel,
+                uId,
+                uName,
+                uEmail,
                 claim.getClaimReason(),
                 customerDesc,
+                adminNotes,
                 claim.getStatus(),
                 claim.getCreatedAt(),
                 claim.getUpdatedAt()
@@ -118,6 +146,30 @@ public class ClaimResponse {
         this.modelNumber = modelNumber;
     }
 
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
     public String getClaimReason() {
         return claimReason;
     }
@@ -132,6 +184,14 @@ public class ClaimResponse {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getAdminNotes() {
+        return adminNotes;
+    }
+
+    public void setAdminNotes(String adminNotes) {
+        this.adminNotes = adminNotes;
     }
 
     public ClaimStatus getStatus() {

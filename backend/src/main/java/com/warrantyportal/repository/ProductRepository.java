@@ -31,4 +31,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     boolean existsBySerialNumberIgnoreCaseAndUserIdAndIdNot(String serialNumber, UUID userId, UUID id);
 
     void deleteByIdAndUserId(UUID id, UUID userId);
+
+    @Query("SELECT p FROM Product p JOIN FETCH p.user LEFT JOIN FETCH p.warranty ORDER BY p.createdAt DESC")
+    List<Product> findAllWithUserAndWarrantyOrderByCreatedAtDesc();
 }

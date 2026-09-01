@@ -10,7 +10,7 @@
 
 ---
 
-## 🚦 Current Project Status: **PHASE 10 (Completed)**
+## 🚦 Current Project Status: **PHASE 11 (Completed)**
 
 ### Phase 1: Project Planning & Requirements
 - **Status:** **COMPLETED**
@@ -140,6 +140,28 @@
   - [backend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/CLAIMS_MANAGEMENT.md) — Backend entity mapping, claim lifecycle, validation rules, REST APIs, and test coverage.
   - [frontend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/CLAIMS_MANAGEMENT.md) — Frontend routes, submit modal, claim details timeline, and user flows.
 
+### Phase 11: Admin Management Module
+- **Status:** **COMPLETED**
+- **Admin Authentication & Role Authorization:** Enforced strictly via Spring Security (`/api/admin/**` requires `ROLE_ADMIN`). Customers receive HTTP 403 Forbidden with standard JSON message; unauthenticated requests receive HTTP 401 Unauthorized.
+- **Global Operations Telemetry (`GET /api/admin/dashboard/stats`):** Authoritative database count queries delivering 16 platform-wide KPIs: Total Users, Customers, Admins, Products, Warranties (Active, Expiring Soon, Expired), Invoices, and Claims (Pending, Approved, In Progress, Completed, Rejected, Cancelled).
+- **User Management Directory (`GET /api/admin/users`, `/admin/users`):** Cross-platform user audit view with name and email search filter, system role indicators, and strict exclusion of password hashes or security credentials.
+- **Global Product Registry (`GET /api/admin/products`, `/admin/products`):** Administrative read-only directory inspecting customer equipment, serial numbers, retailers, pricing, and coverage status.
+- **Global Warranty Portfolio (`GET /api/admin/warranties`, `/admin/warranties`):** Dynamic lifecycle calculations, real-time validity windows, days remaining countdowns, and progress bars across all customer warranties.
+- **Global Invoice Documents Vault (`GET /api/admin/invoices`, `/admin/invoices`):** Complete document metadata overview with direct administrative streaming for inline preview and download without exposing Supabase credentials or compromising private storage bucket policies.
+- **Warranty Claim Adjudication Queue (`GET /api/admin/claims`, `/admin/claims`):** Central triage queue with lifecycle status filtering and direct navigation to detailed adjudication.
+- **Claim Decision Processing & Lifecycle State Machine (`/admin/claims/:id`):** Full claim details inspection with deterministic status transitions:
+  - `PENDING` → `APPROVED` (`PATCH /api/admin/claims/{id}/approve`)
+  - `PENDING` → `REJECTED` (`PATCH /api/admin/claims/{id}/reject`) — Requires administrative reason
+  - `APPROVED` → `IN_PROGRESS` (`PATCH /api/admin/claims/{id}/start`)
+  - `IN_PROGRESS` → `COMPLETED` (`PATCH /api/admin/claims/{id}/complete`)
+  - Invalid transitions rejected with HTTP 400 Bad Request; terminal statuses (`COMPLETED`, `REJECTED`, `CANCELLED`) remain immutable.
+- **Internal Administrative Notes:** Persisted in `claims.additional_information` via internal delimiter; customer-facing responses automatically strip admin notes to ensure customer privacy.
+- **Frontend Admin Navigation & Route Guards:** `AdminRoute` guard, role-based post-login redirection (`/admin` vs `/dashboard`), and adaptive navigation header for `ADMIN` vs `CUSTOMER` users.
+- **Automated Test Suite:** 37 automated admin unit & integration tests (`AdminServiceTest` and `AdminControllerTest`) validating KPIs, directories, state machine enforcement, customer 403 restrictions, and unauthenticated 401 checks (148 tests passing overall with 0 failures).
+- **Developer Guides:**
+  - [backend/ADMIN_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/ADMIN_MANAGEMENT.md) — Admin role authorization, REST APIs, KPI queries, state machine validation, and test coverage.
+  - [frontend/ADMIN_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/ADMIN_MANAGEMENT.md) — Admin routes, `AdminRoute` guard, operations dashboard, claim adjudication UI, and confirmation modals.
+
 ---
 
 ## 🛠️ Technology Stack
@@ -169,8 +191,8 @@
 ### For Administrators
 - **Global Overview:** High-level platform KPIs covering active warranties, user accounts, and claim backlogs.
 - **Auditing & Verification:** Search and verify registered products, serial numbers, and uploaded purchase documents.
-- **Claim Adjudication Workflow:** Review, approve, reject, or update status of submitted customer warranty claims.
-- **User Management:** Oversee registered users and system integrity.
+- **Claim Adjudication Workflow:** Review, approve, reject, or update status of submitted customer warranty claims with confirmation dialogs and administrative notes.
+- **User Management:** Oversee registered customer and administrator accounts with name and email search filtering.
 
 ---
 
@@ -187,7 +209,7 @@
 [x] PHASE 8:  Warranty Lifecycle Management (Completed)
 [x] PHASE 9:  Invoice Management & Storage (Completed)
 [x] PHASE 10: Warranty Claims Engine (Completed)
-[ ] PHASE 11: Admin Management Module
+[x] PHASE 11: Admin Management Module (Completed)
 [ ] PHASE 12: Dashboard Analytics & Notifications
 [ ] PHASE 13: Google Stitch UI Implementation
 [ ] PHASE 14: Integration & Testing
@@ -208,12 +230,16 @@
 - [backend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/WARRANTY_MANAGEMENT.md) — Backend warranty management entity architecture, lifecycle calculations, REST APIs, and test coverage.
 - [backend/INVOICE_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/INVOICE_MANAGEMENT.md) — Backend invoice management entity architecture, Supabase storage integration, REST APIs, and test coverage.
 - [backend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/CLAIMS_MANAGEMENT.md) — Backend warranty claims entity architecture, validation rules, REST APIs, and test coverage.
+- [backend/ADMIN_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/ADMIN_MANAGEMENT.md) — Backend admin management entity architecture, REST APIs, state machine validation, and test coverage.
 - [frontend/FRONTEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/FRONTEND_SETUP.md) — Frontend developer guide, directory layout, commands, routes, and environment configuration.
 - [frontend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/AUTHENTICATION.md) — Frontend authentication architecture, JWT lifecycle, route guards, and test guide.
 - [frontend/PRODUCT_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/PRODUCT_MANAGEMENT.md) — Frontend product routes, UI components, validation, and user flows.
 - [frontend/WARRANTY_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/WARRANTY_MANAGEMENT.md) — Frontend warranty routes, UI components, accessible progress bars, and user flows.
 - [frontend/INVOICE_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/INVOICE_MANAGEMENT.md) — Frontend invoice routes, upload modal, product invoice panel, and user flows.
 - [frontend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/CLAIMS_MANAGEMENT.md) — Frontend warranty claim routes, submit modal, claim details timeline, and user flows.
+- [frontend/ADMIN_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/ADMIN_MANAGEMENT.md) — Frontend admin routes, operations dashboard, claim adjudication UI, and confirmation modals.
+
+
 
 
 

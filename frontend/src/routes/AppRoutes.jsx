@@ -16,13 +16,21 @@ import WarrantyDetailsPage from '../pages/WarrantyDetailsPage';
 import InvoicesPage from '../pages/InvoicesPage';
 import ClaimsPage from '../pages/ClaimsPage';
 import ClaimDetailsPage from '../pages/ClaimDetailsPage';
+import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
+import AdminUsersPage from '../pages/admin/AdminUsersPage';
+import AdminProductsPage from '../pages/admin/AdminProductsPage';
+import AdminWarrantiesPage from '../pages/admin/AdminWarrantiesPage';
+import AdminInvoicesPage from '../pages/admin/AdminInvoicesPage';
+import AdminClaimsPage from '../pages/admin/AdminClaimsPage';
+import AdminClaimDetailsPage from '../pages/admin/AdminClaimDetailsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
+import AdminRoute from './AdminRoute';
 
 /**
  * Main Application Routing.
- * Phase 10 — Warranty Claims
+ * Phase 11 — Admin Management Module
  */
 export default function AppRoutes() {
   return (
@@ -33,13 +41,13 @@ export default function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-        {/* Public Authentication Routes (Guarded: redirect to /dashboard if logged in) */}
+        {/* Public Authentication Routes (Guarded: redirect to /dashboard or /admin if logged in) */}
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
 
-        {/* Protected Routes (Guarded: redirect to /login if unauthenticated) */}
+        {/* Protected Customer Routes (Guarded: redirect to /login if unauthenticated) */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/products" element={<ProductsPage />} />
@@ -51,6 +59,17 @@ export default function AppRoutes() {
           <Route path="/invoices" element={<InvoicesPage />} />
           <Route path="/claims" element={<ClaimsPage />} />
           <Route path="/claims/:id" element={<ClaimDetailsPage />} />
+        </Route>
+
+        {/* Protected Admin Routes (Guarded: requires Role.ADMIN) */}
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/products" element={<AdminProductsPage />} />
+          <Route path="/admin/warranties" element={<AdminWarrantiesPage />} />
+          <Route path="/admin/invoices" element={<AdminInvoicesPage />} />
+          <Route path="/admin/claims" element={<AdminClaimsPage />} />
+          <Route path="/admin/claims/:id" element={<AdminClaimDetailsPage />} />
         </Route>
 
         {/* 404 Catch-All Route */}
