@@ -26,13 +26,23 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final NotificationService notificationService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService) {
+        this(userRepository, passwordEncoder, jwtService, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtService jwtService,
+                       NotificationService notificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -54,6 +64,15 @@ public class AuthService {
         );
 
         User savedUser = userRepository.save(newUser);
+
+        // Phase 12: Admin Notification
+        if (notificationService != null) {
+            notificationService.notifyAdmins(
+                    "New Customer Registered",
+                    "Customer " + savedUser.getName() + " (" + savedUser.getEmail() + ") has registered an account.",
+                    com.warrantyportal.entity.NotificationType.ACCOUNT
+            );
+        }
 
         return new AuthResponse(
                 "Registration successful",

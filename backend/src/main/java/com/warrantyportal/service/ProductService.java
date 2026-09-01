@@ -10,6 +10,8 @@ import com.warrantyportal.exception.DuplicateSerialNumberException;
 import com.warrantyportal.exception.ResourceNotFoundException;
 import com.warrantyportal.repository.ProductRepository;
 import com.warrantyportal.repository.WarrantyRepository;
+import com.warrantyportal.entity.NotificationType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
  * Service orchestrating customer product registrations, warranty synchronizations, and lifecycle queries.
  * Enforces strict per-customer data isolation and serial number uniqueness.
  * Phase 7 — Product Management
+ * Phase 12 — Dashboard & Notifications
  */
 @Service
 @Transactional
@@ -29,10 +32,17 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final WarrantyRepository warrantyRepository;
+    private final NotificationService notificationService;
 
     public ProductService(ProductRepository productRepository, WarrantyRepository warrantyRepository) {
+        this(productRepository, warrantyRepository, null);
+    }
+
+    @Autowired
+    public ProductService(ProductRepository productRepository, WarrantyRepository warrantyRepository, NotificationService notificationService) {
         this.productRepository = productRepository;
         this.warrantyRepository = warrantyRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -68,6 +78,22 @@ public class ProductService {
         product.setWarranty(warranty);
 
         Product savedProduct = productRepository.save(product);
+
+        // Phase 12: Contextual Notifications
+        if (notificationService != null) {
+            notificationService.createNotification(
+                    currentUser,
+                    "Product Registered",
+                    "Your product '" + savedProduct.getProductName() + "' (" + savedProduct.getBrand() + ") has been successfully registered.",
+                    NotificationType.PRODUCT
+            );
+            notificationService.notifyAdmins(
+                    "New Product Registered",
+                    "Customer " + currentUser.getName() + " registered product '" + savedProduct.getProductName() + "' (" + savedProduct.getBrand() + ").",
+                    NotificationType.PRODUCT
+            );
+        }
+
         return ProductResponse.fromProduct(savedProduct);
     }
 

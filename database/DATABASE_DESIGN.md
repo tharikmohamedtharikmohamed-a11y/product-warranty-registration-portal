@@ -172,6 +172,19 @@ Stores warranty claim requests initiated by customers.
 | `created_at` | `TIMESTAMPTZ` | **NO** | `CURRENT_TIMESTAMP` | Claim submission timestamp |
 | `updated_at` | `TIMESTAMPTZ` | **NO** | `CURRENT_TIMESTAMP` | Status transition timestamp |
 
+### 3.6 `notifications` Table
+Stores contextual notifications for customer and administrator lifecycle events (Phase 12).
+
+| Column Name | Data Type | Nullable | Default Value | Constraints & Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `UUID` | **NO** | `gen_random_uuid()` | Primary Key |
+| `user_id` | `UUID` | **NO** | *None* | FK $\rightarrow$ `users(id)` ON DELETE CASCADE |
+| `title` | `VARCHAR(255)` | **NO** | *None* | Notification title / header |
+| `message` | `TEXT` | **NO** | *None* | Detailed human-readable alert message |
+| `type` | `VARCHAR(50)` | **NO** | *None* | `CHECK (type IN ('PRODUCT', 'WARRANTY', 'CLAIM', 'INVOICE', 'ACCOUNT', 'ADMIN'))` |
+| `is_read` | `BOOLEAN` | **NO** | `false` | Read status flag |
+| `created_at` | `TIMESTAMPTZ` | **NO** | `CURRENT_TIMESTAMP` | Event timestamp |
+
 ---
 
 ## 4. Foreign Key Constraints & Safe Deletion Rules
@@ -184,6 +197,7 @@ Stores warranty claim requests initiated by customers.
 | `fk_invoices_product` | `invoices.product_id` | `products.id` | **RESTRICT** | Prevents deleting a product while physical proof-of-purchase files exist in Supabase Storage. Storage files must be deleted first. |
 | `fk_claims_user` | `claims.user_id` | `users.id` | **RESTRICT** | Prevents deletion of users with claim history. |
 | `fk_claims_product` | `claims.product_id` | `products.id` | **RESTRICT** | Strict audit preservation: a product that has been subject to formal warranty claims cannot be deleted, preserving resolution history. |
+| `fk_notifications_user` | `notifications.user_id` | `users.id` | **CASCADE** | When a user account is deleted, its contextual notifications are cleanly purged. |
 
 ---
 
@@ -213,6 +227,10 @@ Stores warranty claim requests initiated by customers.
 | `claims` | `idx_claims_user_id` | `(user_id)` | BTREE | Fetch claims submitted by a specific user |
 | `claims` | `idx_claims_product_id` | `(product_id)` | BTREE | Fetch claim history for a product |
 | `claims` | `idx_claims_status` | `(status)` | BTREE | Admin adjudication queue filtering (`PENDING`) |
+| `notifications` | `notifications_pkey` | `(id)` | BTREE (UNIQUE) | Primary key lookup |
+| `notifications` | `idx_notifications_user_id` | `(user_id)` | BTREE | Fast retrieval of customer's notifications |
+| `notifications` | `idx_notifications_is_read` | `(is_read)` | BTREE | Unread counter and filter query acceleration |
+| `notifications` | `idx_notifications_created_at` | `(created_at)` | BTREE | Chronological ordering of notification feed |
 
 ---
 
@@ -307,7 +325,7 @@ invoices/a4f3c7e0-1234-4b5a-9876-000000000001/f9b8c7d6-5432-4a1b-8765-0000000000
 ## 9. Security Architecture & Threat Defense
 
 ### 9.1 Row Level Security (RLS)
-Row Level Security is enabled on all 5 tables (`users`, `products`, `warranties`, `invoices`, `claims`).
+Row Level Security is enabled on all 6 tables (`users`, `products`, `warranties`, `invoices`, `claims`, `notifications`).
 - By default, PostgREST requests using the public `anon` or standard `authenticated` Supabase roles cannot read, insert, update, or delete any records.
 - The Spring Boot application connects directly over standard PostgreSQL JDBC using the `postgres` administrative role, which possesses `BYPASSRLS` privileges.
 - This creates an effective defense-in-depth: even if the public anon key is exposed in client-side code, direct database tampering via PostgREST is completely prevented.

@@ -16,6 +16,7 @@ import WarrantyDetailsPage from '../pages/WarrantyDetailsPage';
 import InvoicesPage from '../pages/InvoicesPage';
 import ClaimsPage from '../pages/ClaimsPage';
 import ClaimDetailsPage from '../pages/ClaimDetailsPage';
+import NotificationsPage from '../pages/NotificationsPage';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
 import AdminUsersPage from '../pages/admin/AdminUsersPage';
 import AdminProductsPage from '../pages/admin/AdminProductsPage';
@@ -31,6 +32,7 @@ import AdminRoute from './AdminRoute';
 /**
  * Main Application Routing.
  * Phase 11 — Admin Management Module
+ * Phase 12 — Notifications Page Route
  */
 export default function AppRoutes() {
   return (
@@ -50,6 +52,7 @@ export default function AppRoutes() {
         {/* Protected Customer Routes (Guarded: redirect to /login if unauthenticated) */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/register" element={<RegisterProductPage />} />
           <Route path="/products/:id" element={<ProductDetailsPage />} />

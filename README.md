@@ -10,7 +10,7 @@
 
 ---
 
-## 🚦 Current Project Status: **PHASE 11 (Completed)**
+## 🚦 Current Project Status: **PHASE 12 (Completed)**
 
 ### Phase 1: Project Planning & Requirements
 - **Status:** **COMPLETED**
@@ -162,6 +162,33 @@
   - [backend/ADMIN_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/ADMIN_MANAGEMENT.md) — Admin role authorization, REST APIs, KPI queries, state machine validation, and test coverage.
   - [frontend/ADMIN_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/ADMIN_MANAGEMENT.md) — Admin routes, `AdminRoute` guard, operations dashboard, claim adjudication UI, and confirmation modals.
 
+### Phase 12: Dashboard Analytics & Notifications
+- **Status:** **COMPLETED**
+- **Customer Dashboard Telemetry (`GET /api/dashboard`):** Real database-backed aggregation pipeline delivering equipment summaries, warranty statuses (`ACTIVE`, `EXPIRING_SOON`, `EXPIRED`), claim metrics (`pending`, `completed`, etc.), and invoice counts.
+- **Expiring Warranties Preview:** Customer dashboard displays up to 5 warranties expiring soonest with exact days remaining countdown badges and quick inspection links.
+- **Recent Claims Preview:** Customer dashboard showcases latest submitted claims with real-time status badges and inspection links.
+- **Authoritative Recent Activity Timeline:** Derives a unified, timestamped audit trail from real database records (products, invoices, claims) sorted chronologically.
+- **Automated Notification Engine (`NotificationService`):**
+  - PostgreSQL table `notifications` created in Supabase with user foreign key, type checks (`INFO`, `EXPIRATION`, `CLAIM_UPDATE`, `SYSTEM`), and performance indexes.
+  - Triggered during lifecycle events: product registration, invoice upload, claim submission/cancellation, and admin adjudication status changes.
+  - User-scoped queries with anti-IDOR protections returning HTTP 404 on unowned notification operations.
+  - REST endpoints: `GET /api/notifications`, `GET /api/notifications/unread-count`, `PATCH /api/notifications/{id}/read`, `PATCH /api/notifications/read-all`.
+- **Global Navbar Notification Bell:**
+  - Real-time unread badge counter in `Navbar.jsx`.
+  - Dropdown preview displaying recent notifications, relative timestamps, inline mark-as-read, and mark-all-as-read actions.
+- **Dedicated Notifications Inbox (`/notifications`):**
+  - Full-page user inbox with `All` vs `Unread` filtering tabs, lifecycle type badges, mark read/all read controls, and accessible empty/loading states.
+- **Administrative Operational Telemetry (`AdminDashboardPage.jsx`):**
+  - Retained all 16 authoritative platform KPIs established in Phase 11.
+  - Added 3 live operational previews: Recent Claims Received, Recently Registered Users, and Recently Registered Equipment.
+- **Automated Test Suite:** 21 automated unit & integration tests (`NotificationServiceTest`, `NotificationControllerTest`, `DashboardServiceTest`, `DashboardControllerTest`) bringing the backend test suite to **169 tests run with 0 failures and 0 errors**.
+- **Frontend Build:** Verified with Vite production build passing with zero errors.
+- **Developer Guides:**
+  - [backend/NOTIFICATION_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/NOTIFICATION_MANAGEMENT.md)
+  - [backend/DASHBOARD_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/DASHBOARD_MANAGEMENT.md)
+  - [frontend/NOTIFICATION_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/NOTIFICATION_MANAGEMENT.md)
+  - [frontend/DASHBOARD_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/DASHBOARD_MANAGEMENT.md)
+
 ---
 
 ## 🛠️ Technology Stack
@@ -210,7 +237,7 @@
 [x] PHASE 9:  Invoice Management & Storage (Completed)
 [x] PHASE 10: Warranty Claims Engine (Completed)
 [x] PHASE 11: Admin Management Module (Completed)
-[ ] PHASE 12: Dashboard Analytics & Notifications
+[x] PHASE 12: Dashboard Analytics & Notifications (Completed)
 [ ] PHASE 13: Google Stitch UI Implementation
 [ ] PHASE 14: Integration & Testing
 [ ] PHASE 15: GitHub & Final Documentation
@@ -231,6 +258,8 @@
 - [backend/INVOICE_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/INVOICE_MANAGEMENT.md) — Backend invoice management entity architecture, Supabase storage integration, REST APIs, and test coverage.
 - [backend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/CLAIMS_MANAGEMENT.md) — Backend warranty claims entity architecture, validation rules, REST APIs, and test coverage.
 - [backend/ADMIN_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/ADMIN_MANAGEMENT.md) — Backend admin management entity architecture, REST APIs, state machine validation, and test coverage.
+- [backend/NOTIFICATION_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/NOTIFICATION_MANAGEMENT.md) — Backend notification engine architecture, user-scoping, automated event triggers, and anti-IDOR tests.
+- [backend/DASHBOARD_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/backend/DASHBOARD_MANAGEMENT.md) — Backend customer & admin dashboard telemetry aggregation, queries, and test coverage.
 - [frontend/FRONTEND_SETUP.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/FRONTEND_SETUP.md) — Frontend developer guide, directory layout, commands, routes, and environment configuration.
 - [frontend/AUTHENTICATION.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/AUTHENTICATION.md) — Frontend authentication architecture, JWT lifecycle, route guards, and test guide.
 - [frontend/PRODUCT_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/PRODUCT_MANAGEMENT.md) — Frontend product routes, UI components, validation, and user flows.
@@ -238,7 +267,8 @@
 - [frontend/INVOICE_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/INVOICE_MANAGEMENT.md) — Frontend invoice routes, upload modal, product invoice panel, and user flows.
 - [frontend/CLAIMS_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/CLAIMS_MANAGEMENT.md) — Frontend warranty claim routes, submit modal, claim details timeline, and user flows.
 - [frontend/ADMIN_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/ADMIN_MANAGEMENT.md) — Frontend admin routes, operations dashboard, claim adjudication UI, and confirmation modals.
-
+- [frontend/NOTIFICATION_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/NOTIFICATION_MANAGEMENT.md) — Frontend notification bell dropdown, inbox page, filtering, and unread badges.
+- [frontend/DASHBOARD_MANAGEMENT.md](file:///c:/Users/thari/OneDrive/Desktop/Tharik_project/frontend/DASHBOARD_MANAGEMENT.md) — Frontend customer dashboard KPIs, expiring previews, claims previews, activity timeline, and admin operational feeds.
 
 
 

@@ -3,6 +3,7 @@ package com.warrantyportal.service;
 import com.warrantyportal.dto.InvoiceDownload;
 import com.warrantyportal.dto.InvoiceResponse;
 import com.warrantyportal.entity.Invoice;
+import com.warrantyportal.entity.NotificationType;
 import com.warrantyportal.entity.Product;
 import com.warrantyportal.entity.User;
 import com.warrantyportal.exception.InvalidFileException;
@@ -48,13 +49,23 @@ public class InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final ProductRepository productRepository;
     private final SupabaseStorageService supabaseStorageService;
+    private final NotificationService notificationService;
 
     public InvoiceService(InvoiceRepository invoiceRepository,
                           ProductRepository productRepository,
                           SupabaseStorageService supabaseStorageService) {
+        this(invoiceRepository, productRepository, supabaseStorageService, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public InvoiceService(InvoiceRepository invoiceRepository,
+                          ProductRepository productRepository,
+                          SupabaseStorageService supabaseStorageService,
+                          NotificationService notificationService) {
         this.invoiceRepository = invoiceRepository;
         this.productRepository = productRepository;
         this.supabaseStorageService = supabaseStorageService;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -110,6 +121,17 @@ public class InvoiceService {
         try {
             Invoice savedInvoice = invoiceRepository.save(invoice);
             logger.info("Invoice metadata saved successfully for product={}, invoiceId={}", product.getId(), savedInvoice.getId());
+
+            // Phase 12: Contextual Notification
+            if (notificationService != null) {
+                notificationService.createNotification(
+                        currentUser,
+                        "Invoice Uploaded",
+                        "Invoice '" + savedInvoice.getFileName() + "' has been uploaded for product '" + product.getProductName() + "'.",
+                        NotificationType.INVOICE
+                );
+            }
+
             return InvoiceResponse.fromInvoice(savedInvoice);
         } catch (Exception ex) {
             // Compensating transaction: Clean up uploaded Storage file to avoid orphaned binary

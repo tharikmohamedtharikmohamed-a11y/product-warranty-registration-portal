@@ -12,8 +12,10 @@ import com.warrantyportal.exception.InvalidClaimException;
 import com.warrantyportal.exception.ResourceNotFoundException;
 import com.warrantyportal.repository.ClaimRepository;
 import com.warrantyportal.repository.ProductRepository;
+import com.warrantyportal.entity.NotificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ import java.util.UUID;
  * Service orchestrating customer warranty claims, warranty eligibility validation,
  * customer ownership isolation, and cancellation transitions.
  * Phase 10 — Warranty Claims
+ * Phase 12 — Dashboard & Notifications
  */
 @Service
 @Transactional
@@ -34,13 +37,23 @@ public class ClaimService {
     private final ClaimRepository claimRepository;
     private final ProductRepository productRepository;
     private final WarrantyService warrantyService;
+    private final NotificationService notificationService;
 
     public ClaimService(ClaimRepository claimRepository,
                         ProductRepository productRepository,
                         WarrantyService warrantyService) {
+        this(claimRepository, productRepository, warrantyService, null);
+    }
+
+    @Autowired
+    public ClaimService(ClaimRepository claimRepository,
+                        ProductRepository productRepository,
+                        WarrantyService warrantyService,
+                        NotificationService notificationService) {
         this.claimRepository = claimRepository;
         this.productRepository = productRepository;
         this.warrantyService = warrantyService;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -74,6 +87,21 @@ public class ClaimService {
         Claim savedClaim = claimRepository.save(claim);
         logger.info("Warranty claim created successfully: claimId={}, productId={}, status={}",
                 savedClaim.getId(), productId, savedClaim.getStatus());
+
+        // Phase 12: Contextual Notifications
+        if (notificationService != null) {
+            notificationService.createNotification(
+                    currentUser,
+                    "Warranty Claim Submitted",
+                    "Your warranty claim for '" + product.getProductName() + "' has been submitted (Status: PENDING).",
+                    NotificationType.CLAIM
+            );
+            notificationService.notifyAdmins(
+                    "New Warranty Claim Submitted",
+                    "Customer " + currentUser.getName() + " submitted a warranty claim for '" + product.getProductName() + "'.",
+                    NotificationType.CLAIM
+            );
+        }
 
         return ClaimResponse.fromClaim(savedClaim);
     }
@@ -130,6 +158,22 @@ public class ClaimService {
         claim.setStatus(ClaimStatus.CANCELLED);
         Claim updatedClaim = claimRepository.save(claim);
         logger.info("Claim {} successfully cancelled by user {}", claimId, userId);
+
+        // Phase 12: Contextual Notifications
+        if (notificationService != null) {
+            String prodName = claim.getProduct() != null ? claim.getProduct().getProductName() : "Product";
+            notificationService.createNotification(
+                    claim.getUser(),
+                    "Warranty Claim Cancelled",
+                    "Your warranty claim for '" + prodName + "' has been cancelled.",
+                    NotificationType.CLAIM
+            );
+            notificationService.notifyAdmins(
+                    "Warranty Claim Cancelled",
+                    "Customer " + (claim.getUser() != null ? claim.getUser().getName() : "Customer") + " cancelled their claim for '" + prodName + "'.",
+                    NotificationType.CLAIM
+            );
+        }
 
         return ClaimResponse.fromClaim(updatedClaim);
     }

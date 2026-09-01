@@ -171,6 +171,28 @@ CREATE TRIGGER trg_claims_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 -- =============================================================================
+-- 6. NOTIFICATIONS TABLE
+-- =============================================================================
+-- Stores user-scoped contextual notifications for warranty, claim, invoice, and product events.
+CREATE TABLE IF NOT EXISTS notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT chk_notifications_type CHECK (type IN ('PRODUCT', 'WARRANTY', 'CLAIM', 'INVOICE', 'ACCOUNT', 'ADMIN')),
+    CONSTRAINT chk_notifications_title_not_empty CHECK (LENGTH(TRIM(title)) > 0)
+);
+
+-- Notifications Indexes
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at);
+
+-- =============================================================================
 -- ROW LEVEL SECURITY (RLS) DEFENSE-IN-DEPTH
 -- =============================================================================
 -- Row Level Security is enabled across all application tables.
@@ -182,6 +204,7 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE warranties ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE claims ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
 -- =============================================================================
 -- SUPABASE STORAGE BUCKET CONFIGURATION (REFERENCE)

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import NotificationBell from './NotificationBell';
 
 /**
  * Global Navigation Header.
  * Brand: WarrantyHub
  * Tagline: "Your Warranties. Organized. Protected. Always Accessible."
  * Phase 6 — Frontend Authentication & Route Guards
- * Phase 11 — Admin Management Module
+ * Phase 12 — Global Notification Bell
  */
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -135,7 +136,8 @@ export default function Navbar() {
 
         <div className="navbar-actions">
           {isAuthenticated ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <NotificationBell />
               <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: '500', color: 'var(--text-secondary)' }}>
                 {user?.name}
               </span>

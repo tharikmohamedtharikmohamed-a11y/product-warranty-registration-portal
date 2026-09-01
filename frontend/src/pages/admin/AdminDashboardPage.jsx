@@ -257,6 +257,190 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           </div>
+
+          {/* Operational Telemetry: Recent Claims, Users & Products */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+            {/* Recent Claims Queue Preview */}
+            <div className="detail-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h2 style={{ fontSize: 'var(--font-size-base)', fontWeight: '700', margin: 0, color: 'var(--text-primary)' }}>
+                  Recent Claims Received
+                </h2>
+                <Link to="/admin/claims" className="btn btn-ghost btn-xs">
+                  All Claims →
+                </Link>
+              </div>
+
+              {(!stats.recentClaims || stats.recentClaims.length === 0) ? (
+                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', margin: 0, padding: '1rem 0' }}>
+                  No recent claims recorded.
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                  {stats.recentClaims.slice(0, 4).map((claim) => (
+                    <div
+                      key={claim.id}
+                      style={{
+                        padding: '0.75rem',
+                        background: 'var(--background)',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '700', color: 'var(--text-primary)' }}>
+                          {claim.productName}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                          {claim.customerName || claim.customerEmail}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '0.125rem' }}>
+                          {claim.claimReason}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.25rem' }}>
+                        <span
+                          className={`status-badge ${
+                            claim.status === 'PENDING'
+                              ? 'badge-pending'
+                              : claim.status === 'APPROVED' || claim.status === 'COMPLETED'
+                              ? 'badge-active'
+                              : claim.status === 'IN_PROGRESS'
+                              ? 'badge-expiring'
+                              : 'badge-expired'
+                          }`}
+                          style={{ fontSize: '10px', padding: '0.15rem 0.4rem' }}
+                        >
+                          {claim.status}
+                        </span>
+                        <Link to={`/admin/claims/${claim.id}`} className="btn btn-ghost btn-xs" style={{ fontSize: '11px', padding: '0.1rem 0.3rem' }}>
+                          Review →
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Recent Users Preview */}
+            <div className="detail-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h2 style={{ fontSize: 'var(--font-size-base)', fontWeight: '700', margin: 0, color: 'var(--text-primary)' }}>
+                  Recently Registered Users
+                </h2>
+                <Link to="/admin/users" className="btn btn-ghost btn-xs">
+                  All Users →
+                </Link>
+              </div>
+
+              {(!stats.recentUsers || stats.recentUsers.length === 0) ? (
+                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', margin: 0, padding: '1rem 0' }}>
+                  No recent user registrations.
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                  {stats.recentUsers.slice(0, 4).map((u) => (
+                    <div
+                      key={u.id}
+                      style={{
+                        padding: '0.75rem',
+                        background: 'var(--background)',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '700', color: 'var(--text-primary)' }}>
+                          {u.name}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                          {u.email}
+                        </div>
+                      </div>
+
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          padding: '0.15rem 0.5rem',
+                          borderRadius: '9999px',
+                          background: u.role === 'ADMIN' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(37, 99, 235, 0.12)',
+                          color: u.role === 'ADMIN' ? 'var(--danger, #ef4444)' : 'var(--primary, #2563eb)'
+                        }}
+                      >
+                        {u.role}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Recent Products Preview */}
+            <div className="detail-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h2 style={{ fontSize: 'var(--font-size-base)', fontWeight: '700', margin: 0, color: 'var(--text-primary)' }}>
+                  Recently Registered Equipment
+                </h2>
+                <Link to="/admin/products" className="btn btn-ghost btn-xs">
+                  All Products →
+                </Link>
+              </div>
+
+              {(!stats.recentProducts || stats.recentProducts.length === 0) ? (
+                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', margin: 0, padding: '1rem 0' }}>
+                  No recent product registrations.
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                  {stats.recentProducts.slice(0, 4).map((p) => (
+                    <div
+                      key={p.id}
+                      style={{
+                        padding: '0.75rem',
+                        background: 'var(--background)',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: '700', color: 'var(--text-primary)' }}>
+                          {p.productName}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                          {p.brand} • Owner: {p.customerName}
+                        </div>
+                      </div>
+
+                      <span
+                        className={`status-badge ${
+                          p.warrantyStatus === 'ACTIVE'
+                            ? 'badge-active'
+                            : p.warrantyStatus === 'EXPIRING_SOON'
+                            ? 'badge-expiring'
+                            : 'badge-expired'
+                        }`}
+                        style={{ fontSize: '10px', padding: '0.15rem 0.4rem' }}
+                      >
+                        {p.warrantyStatus?.replace('_', ' ') || 'ACTIVE'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </>
       )}
     </div>

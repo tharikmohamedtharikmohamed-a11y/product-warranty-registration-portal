@@ -13,4 +13,9 @@ public class WarrantyPortalApplication {
     public static void main(String[] args) {
         SpringApplication.run(WarrantyPortalApplication.class, args);
     }
+
+    @org.springframework.context.annotation.Bean
+    public java.time.Clock clock() {
+        return java.time.Clock.systemDefaultZone();
+    }
 }
